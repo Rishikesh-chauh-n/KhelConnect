@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${state.name} + ' - State Details'">State Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans leading-relaxed">
+
+<!-- State Header -->
+<header class="bg-white shadow-md p-4">
+    <h1 class="text-3xl font-bold text-center text-green-800" th:text="${state.name}">State Name</h1>
+</header>
+
+<!-- Search by Game Name -->
+<div class="max-w-2xl mx-auto mt-8 bg-white p-6 rounded-lg shadow">
+    <h2 class="text-xl font-semibold mb-4 text-gray-800">Search Events by Game</h2>
+
+    <input type="text" id="gameSearch" placeholder="Enter game name..."
+           class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"/>
+
+    <div id="eventList" class="mt-6">
+        <table class="w-full table-auto border border-gray-200">
+            <thead class="bg-gray-200">
+            <tr>
+                <th class="p-2 text-left">Event Name</th>
+                <th class="p-2 text-left">Game</th>
+                <th class="p-2 text-left">Location</th>
+                <th class="p-2 text-left">Date</th>
+            </tr>
+            </thead>
+            <tbody id="eventTableBody">
+            <tr th:each="event : ${events}" class="hover:bg-gray-100">
+                <td class="p-2" th:text="${event.name}">Event Name</td>
+                <td class="p-2" th:text="${event.game.name}">Game Name</td>
+                <td class="p-2" th:text="${event.location}">Location</td>
+                <td class="p-2" th:text="${event.date}">Date</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JavaScript for filtering events -->
+<script>
+    const input = document.getElementById('gameSearch');
+    const rows = document.querySelectorAll('#eventTableBody tr');
+
+    input.addEventListener('input', function () {
+        const search = this.value.toLowerCase();
+
+        rows.forEach(row => {
+            const gameCell = row.children[1].innerText.toLowerCase();
+            if (gameCell.includes(search)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

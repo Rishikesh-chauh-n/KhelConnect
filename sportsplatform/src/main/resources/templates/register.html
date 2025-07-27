@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | KhelConnect India</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+            url('/images/background.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .register-container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 35px;
+            border-radius: 15px;
+            width: 450px;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+
+        .login-link {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .login-link a {
+            color: #00ffcc;
+            text-decoration: none;
+            font-weight: bold;
+            border: 2px solid #00ffcc;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .login-link a:hover {
+            background-color: #00ffcc;
+            color: black;
+        }
+
+        .register-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 28px;
+            color: #00ffcc;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 15px;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #00ffcc;
+            color: black;
+            font-weight: bold;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .register-btn:hover {
+            background-color: #00ddaa;
+        }
+
+        .error-message {
+            color: #ff4444;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="register-container">
+    <div class="login-link">
+        <a th:href="@{/login}">Login</a>
+    </div>
+
+    <h2>Create Your Account</h2>
+
+    <form th:action="@{/register}" method="post">
+        <!-- CSRF Token -->
+
+
+        <div th:if="${param.error}" class="error-message">
+            Registration failed. Please try again.
+        </div>
+
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" placeholder="Choose a username" required />
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Enter your email" required />
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Create a password" required />
+        </div>
+
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" name="confirmPassword" placeholder="Re-enter password" required />
+        </div>
+
+        <button type="submit" class="register-btn">Register</button>
+    </form>
+</div>
+</body>
+</html>
