@@ -12,4 +12,5 @@ public interface EventService {
     List<Event> getEventsByGameId(Long gameId);
     List<Event> getEventsByLocation(String location);
     public List<Event> getTopFeaturedGames(int count);
+    List<Event> findByGameName(String gameName);
 }

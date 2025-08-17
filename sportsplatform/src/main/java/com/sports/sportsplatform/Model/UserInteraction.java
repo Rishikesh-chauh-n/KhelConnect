@@ -18,6 +18,8 @@ public class UserInteraction {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    private String interactionType;
+
     private String keyword; // Search term, state name, or game name
 
     private LocalDateTime timestamp;

@@ -61,19 +61,72 @@
         </form>
     </section>
 
-    <!-- Email Notification Preferences -->
+<!--    &lt;!&ndash; Email Notification Preferences &ndash;&gt;-->
+<!--    <section>-->
+<!--        <h3 class="text-xl font-semibold text-gray-800 mb-3">📩 Get Email Notifications About</h3>-->
+<!--        <form action="/settings/update-notifications" method="post">-->
+<!--            <div class="grid grid-cols-2 gap-3">-->
+<!--                <label th:each="game : ${games}" class="flex items-center space-x-2">-->
+<!--                    <input type="checkbox" name="notifyGames" th:value="${game.name}" class="form-checkbox h-4 w-4 text-indigo-600">-->
+<!--                    <span th:text="${game.name}"></span>-->
+<!--                </label>-->
+<!--            </div>-->
+<!--            <button type="submit" class="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700 transition">Update Notifications</button>-->
+<!--        </form>-->
+<!--    </section>-->
+
+
     <section>
-        <h3 class="text-xl font-semibold text-gray-800 mb-3">📩 Get Email Notifications About</h3>
+        <h3 class="text-xl font-semibold text-gray-800 mb-3">📩 Email Notifications</h3>
         <form action="/settings/update-notifications" method="post">
-            <div class="grid grid-cols-2 gap-3">
+
+            <!-- State Dropdown -->
+            <label>State</label>
+            <select id="stateSelect" name="stateId" class="form-select">
+                <option value="">-- Select State --</option>
+                <option th:each="state : ${states}"
+                        th:value="${state.id}"
+                        th:text="${state.name}"></option>
+            </select>
+
+            <!-- District Dropdown -->
+            <label class="mt-3">District</label>
+            <select id="districtSelect" name="districtId" class="form-select">
+                <option value="">-- Select District --</option>
+            </select>
+
+            <!-- Games Checkboxes -->
+            <div class="mt-3 grid grid-cols-2 gap-3">
                 <label th:each="game : ${games}" class="flex items-center space-x-2">
-                    <input type="checkbox" name="notifyGames" th:value="${game.name}" class="form-checkbox h-4 w-4 text-indigo-600">
+                    <input type="checkbox" name="gameIds" th:value="${game.id}"
+                           class="form-checkbox h-4 w-4 text-indigo-600">
                     <span th:text="${game.name}"></span>
                 </label>
             </div>
-            <button type="submit" class="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700 transition">Update Notifications</button>
+
+            <button type="submit" class="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700">
+                Update Notifications
+            </button>
         </form>
     </section>
+
+    <script>
+        document.getElementById('stateSelect').addEventListener('change', function () {
+            const stateId = this.value;
+            if (stateId) {
+                fetch(`/districts/by-state/${stateId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const districtSelect = document.getElementById('districtSelect');
+                        districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+                        data.forEach(d => {
+                            districtSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                        });
+                    });
+            }
+        });
+    </script>
+
 
     <!-- Contact Support -->
     <section>

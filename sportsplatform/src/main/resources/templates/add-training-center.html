@@ -1,0 +1,343 @@
+<!-- ✅ Add Training Center Page -->
+<style>
+    form {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f4f4f4;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    form div {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    .trainee-block, .achievement-block {
+        background: #fff;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+    button[type="button"] {
+        background-color: #28a745;
+    }
+
+    button:hover {
+        opacity: 0.9;
+    }
+
+    /* Highlight selected sports */
+    select[multiple] option:checked {
+        background-color: #007bff !important;
+        color: white;
+    }
+</style>
+
+
+
+<!-- ✅ Success message -->
+<div th:if="${param.successCenter}" style="color: green; font-weight: bold; margin-bottom: 15px;">
+    ✅ Training center added successfully!
+</div>
+
+<!-- ❌ General error message -->
+<div th:if="${param.errorCenter}" style="color: red; font-weight: bold; margin-bottom: 15px;">
+    ❌ Failed to add training center. Please try again.
+</div>
+
+<!-- ⚠️ No District selected -->
+<div th:if="${param.errorCenter} == 'NoDistrict'" style="color: orange; font-weight: bold; margin-bottom: 15px;">
+    ⚠️ Please select a district or enter one manually before saving.
+</div>
+
+
+
+<form th:action="@{/admin/save-training-center}" method="post" th:object="${center}" enctype="multipart/form-data">
+    <div>
+        <label>Name:</label>
+        <input type="text" th:field="*{name}" required />
+    </div>
+
+    <div>
+        <label>Description:</label>
+        <textarea th:field="*{description}" required></textarea>
+    </div>
+
+    <div>
+        <label>Address:</label>
+        <input type="text" th:field="*{address}" required />
+    </div>
+
+    <div>
+        <label>Contact Number:</label>
+        <input type="text" th:field="*{contactNumber}" required />
+    </div>
+
+    <div>
+        <label>Email:</label>
+        <input type="text" th:field="*{email}" required />
+    </div>
+
+    <div>
+        <label>State:</label>
+        <select id="stateDropdown" name="stateId" required>
+            <option value="">-- Select State --</option>
+            <option th:each="state : ${states}"
+                    th:value="${state.id}"
+                    th:text="${state.name}">
+            </option>
+        </select>
+    </div>
+
+    <div>
+        <label>District:</label>
+        <select id="districtDropdown" th:field="*{district.id}">
+            <option value="">-- Select District --</option>
+            <!-- Districts will be loaded dynamically -->
+        </select>
+    </div>
+
+    <div>
+        <label>Or Add New District:</label>
+        <input type="text" id="manualDistrict" name="manualDistrictName" placeholder="Enter district name" />
+    </div>
+
+
+    <script>
+        const stateDropdown = document.getElementById("stateDropdown");
+        const districtDropdown = document.getElementById("districtDropdown");
+        const manualInput = document.getElementById("manualDistrict");
+
+        // Fetch districts when state changes
+        stateDropdown.addEventListener("change", function () {
+            const stateId = this.value;
+            districtDropdown.innerHTML = '<option value="">-- Select District --</option>'; // reset
+
+            if (stateId) {
+                fetch(`/districts/by-state/${stateId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(district => {
+                            let option = document.createElement("option");
+                            option.value = district.id;
+                            option.text = district.name;
+                            districtDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(err => console.error("Error loading districts:", err));
+            }
+        });
+
+        // Ensure district is required only if manual input is empty
+        function toggleDropdownRequired() {
+            if (manualInput.value.trim() !== "") {
+                districtDropdown.required = false;
+            } else {
+                districtDropdown.required = true;
+            }
+        }
+
+        manualInput.addEventListener("input", toggleDropdownRequired);
+        toggleDropdownRequired();
+    </script>
+
+
+
+    <div>
+        <label>Training Center Image:</label>
+        <input type="file" name="image" accept="image/*" required />
+    </div>
+
+    <style>
+        .game-option {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 4px;
+            border: 1px solid #007bff;
+            border-radius: 20px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+        .game-option.selected {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+
+    <div>
+        <label>Sports Offered:</label>
+        <div id="gameContainer">
+        <span th:each="game : ${games}"
+              th:data-id="${game.id}"
+              th:text="${game.name}"
+              class="game-option">
+        </span>
+        </div>
+
+        <!-- Hidden select that will store selected sports -->
+        <select id="sportsSelect" name="sportsOffered" multiple hidden></select>
+    </div>
+
+    <script>
+        const gameOptions = document.querySelectorAll(".game-option");
+        const sportsSelect = document.getElementById("sportsSelect");
+
+        gameOptions.forEach(option => {
+            option.addEventListener("click", () => {
+                const id = option.getAttribute("data-id");
+
+                if (option.classList.contains("selected")) {
+                    // Unselect
+                    option.classList.remove("selected");
+                    [...sportsSelect.options].forEach(opt => {
+                        if (opt.value === id) opt.remove();
+                    });
+                } else {
+                    // Select
+                    option.classList.add("selected");
+                    let opt = document.createElement("option");
+                    opt.value = id;
+                    opt.selected = true;
+                    sportsSelect.appendChild(opt);
+                }
+            });
+        });
+    </script>
+
+
+
+    <!-- ✅ Trainee Section -->
+    <div id="traineeContainer">
+        <div th:each="trainee, stat : *{trainees}" class="trainee-block">
+            <h4>Trainee <span th:text="${stat.index + 1}"></span></h4>
+            <label>Name:</label>
+            <input type="text" th:field="*{trainees[__${stat.index}__].name}" required />
+
+            <label>Age:</label>
+            <input type="number" th:field="*{trainees[__${stat.index}__].age}" required />
+
+            <label>Gender:</label>
+            <select th:field="*{trainees[__${stat.index}__].gender}" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label>Sport:</label>
+            <input type="text" th:field="*{trainees[__${stat.index}__].sport}" required />
+
+            <label>Image:</label>
+            <input type="file" name="traineeImage" accept="image/*" />
+
+            <label>Description:</label>
+            <textarea th:field="*{trainees[__${stat.index}__].description}"></textarea>
+
+            <!-- ✅ Achievements inside each trainee -->
+            <div th:each="ach, achStat : *{trainees[__${stat.index}__].achievements}" class="achievement-block">
+                <h5>Achievement <span th:text="${achStat.index + 1}"></span></h5>
+
+                <label>Title:</label>
+                <input type="text" th:field="*{trainees[__${stat.index}__].achievements[__${achStat.index}__].title}" />
+
+                <label>Description:</label>
+                <textarea th:field="*{trainees[__${stat.index}__].achievements[__${achStat.index}__].description}"></textarea>
+
+                <label>Date:</label>
+                <input type="date" th:field="*{trainees[__${stat.index}__].achievements[__${achStat.index}__].date}" />
+
+                <label>Certificate Image:</label>
+                <input type="file" name="certificateImage" accept="image/*" />
+            </div>
+        </div>
+    </div>
+
+    <button type="button" onclick="addTraineeBlock()">+ Add Trainee</button>
+
+    <div>
+        <button type="submit">Save Training Center</button>
+    </div>
+</form>
+
+<script>
+    function addTraineeBlock() {
+        const container = document.getElementById('traineeContainer');
+        const index = container.children.length;
+
+        const block = document.createElement('div');
+        block.className = 'trainee-block';
+
+        block.innerHTML = `
+            <h4>Trainee ${index + 1}</h4>
+            <label>Name:</label>
+            <input type="text" name="trainees[${index}].name" required />
+
+            <label>Age:</label>
+            <input type="number" name="trainees[${index}].age" required />
+
+            <label>Gender:</label>
+            <select name="trainees[${index}].gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label>Sport:</label>
+            <input type="text" name="trainees[${index}].sport" required />
+
+            <label>Image:</label>
+            <input type="file" name="trainees[${index}].image" accept="image/*" />
+
+            <label>Description:</label>
+            <textarea name="trainees[${index}].description"></textarea>
+
+            <div class="achievement-block">
+                <h5>Achievement 1</h5>
+                <label>Title:</label>
+                <input type="text" name="trainees[${index}].achievements[0].title" />
+
+                <label>Description:</label>
+                <textarea name="trainees[${index}].achievements[0].description"></textarea>
+
+                <label>Date:</label>
+                <input type="date" name="trainees[${index}].achievements[0].date" />
+
+                <label>Certificate Image:</label>
+<input type="file" name="certificateImage" accept="image/*" />
+            </div>
+        `;
+
+        container.appendChild(block);
+    }
+</script>

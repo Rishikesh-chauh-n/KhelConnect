@@ -83,11 +83,11 @@ public class Your_Profile_Controller {
                 .orElse(new UserProfile());
 
         // ✅ Fetch Game by its name (you must have a method for this)
-        Game selectedGame = gameRepository.findByName(gameName)
+        Game selectGame = gameRepository.findByName(gameName)
                 .orElseThrow(() -> new RuntimeException("Game not found"));
 
         profile.setUser(user);
-        profile.setSelectedGame(selectedGame); // ✅ Now correct type
+        profile.setSelectedGame(selectGame.getId()); // Only ID is saved
         userProfileRepository.save(profile);
 
         return "redirect:/user/your-profile";

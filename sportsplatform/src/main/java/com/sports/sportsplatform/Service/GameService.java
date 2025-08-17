@@ -12,5 +12,6 @@ public interface GameService {
     void saveGame(Game game);
     void deleteGameById(Long id);
     List<Game> searchGames(String query);
+    public List<Game> getGamesByIds(List<Long> ids);
 
 }

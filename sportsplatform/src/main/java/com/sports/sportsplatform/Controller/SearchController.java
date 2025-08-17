@@ -3,13 +3,13 @@ package com.sports.sportsplatform.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sports.sportsplatform.Model.Event;
 import com.sports.sportsplatform.Model.Game;
+import com.sports.sportsplatform.Model.LearnandTrain.TrainingCenter;
 import com.sports.sportsplatform.Model.State;
 import com.sports.sportsplatform.Model.User;
+import com.sports.sportsplatform.Model.Venues.Venue;
+import com.sports.sportsplatform.Model.Venues.VenueGameDetails;
 import com.sports.sportsplatform.Repository.UserRepository;
-import com.sports.sportsplatform.Service.EventService;
-import com.sports.sportsplatform.Service.GameService;
-import com.sports.sportsplatform.Service.StateService;
-import com.sports.sportsplatform.Service.UserInteractionService;
+import com.sports.sportsplatform.Service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +32,10 @@ public class SearchController {
 
     private final UserInteractionService userInteractionService;
 
+    private final  TrainingCenterService trainingCenterService;
+
     private final UserRepository userRepository;
+    private final VenueService venueService;
 
     @GetMapping("/api/search/suggestions")
     @ResponseBody
@@ -107,7 +110,7 @@ public class SearchController {
 
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
-                userInteractionService.saveInteraction(user,  game.getName());
+                userInteractionService.saveInteraction(user,  game.getName(),"GAME");
             }
         }
 
@@ -131,39 +134,70 @@ public class SearchController {
 //    }
 
 
-    @GetMapping("/states/{id}")
-    public String showStateDetails(@PathVariable Long id, Model model, Principal principal) {
-        // Fetch the state using the ID
-        State state = stateService.getStateById(id);
-        String stateName = state.getName();
+//    @GetMapping("/states/{id}")
+//    public String showStateDetails(@PathVariable Long id, Model model, Principal principal) {
+//        // Fetch the state using the ID
+//        State state = stateService.getStateById(id);
+//        String stateName = state.getName();
+//
+//        // Get events based on the state's name (location)
+//        List<Event> events = eventService.getEventsByLocation(stateName);
+//
+//        // Add state and events to the model
+//        model.addAttribute("state", state);
+//        model.addAttribute("events", events);
+//
+//        // ✅ Fetch user using Principal (just like your settings method)
+//        if (principal != null) {
+//            String email = principal.getName();
+//            Optional<User> optionalUser = userRepository.findByEmail(email); // use repository directly
+//
+//            if (optionalUser.isEmpty()) {
+//                return "redirect:/login"; // fallback, shouldn't happen if user is logged in
+//            }
+//
+//            User user = optionalUser.get();
+//
+//            // ✅ Save interaction
+//            userInteractionService.saveInteraction(user,  stateName);
+//        }
+//
+//        return "state-details"; // refers to state-details.html
+//    }
 
-        // Get events based on the state's name (location)
-        List<Event> events = eventService.getEventsByLocation(stateName);
 
-        // Add state and events to the model
-        model.addAttribute("state", state);
-        model.addAttribute("events", events);
 
-        // ✅ Fetch user using Principal (just like your settings method)
-        if (principal != null) {
-            String email = principal.getName();
-            Optional<User> optionalUser = userRepository.findByEmail(email); // use repository directly
 
-            if (optionalUser.isEmpty()) {
-                return "redirect:/login"; // fallback, shouldn't happen if user is logged in
-            }
+    @GetMapping("/venues/{id}")
+    public String showVenueDetails(@PathVariable Long id, Model model) {
+        Venue venue = venueService.getVenueById(id);
+        model.addAttribute("venue", venue);
 
-            User user = optionalUser.get();
 
-            // ✅ Save interaction
-            userInteractionService.saveInteraction(user,  stateName);
+        System.out.println("Games for venue: " + venue.getName());
+        for (VenueGameDetails gd : venue.getGameDetailsList()) {
+            System.out.println("Game: " + gd.getGame().getName());
         }
 
-        return "state-details"; // refers to state-details.html
+        return "venue-details";
     }
 
 
 
+    @GetMapping("/trainingcenters/{id}")
+    public String showTrainingCenterDetails(@PathVariable Long id, Model model) {
+        TrainingCenter trainingCenter = trainingCenterService.getTrainingCenterById(id);
+
+        if (trainingCenter == null) {
+            throw new RuntimeException("Training Center not found for id " + id);
+        }
+
+        model.addAttribute("trainingCenter", trainingCenter);
+        model.addAttribute("sportsOffered", trainingCenter.getSportsOffered());
+        model.addAttribute("trainees", trainingCenter.getTrainees());
+
+        return "learnandtrain"; // ✅ This is your Thymeleaf HTML file name
+    }
 
 
 

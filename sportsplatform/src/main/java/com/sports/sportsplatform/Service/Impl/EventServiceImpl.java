@@ -47,6 +47,10 @@ public class EventServiceImpl implements EventService {
         return eventRepo.findByLocationContainingIgnoreCase(location);
     }
 
+    public List<Event> findByGameName(String gameName) {
+        return eventRepo.findByGameName(gameName);
+    }
+
 
 
 

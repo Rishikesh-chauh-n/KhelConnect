@@ -1,0 +1,559 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="utf-8" />-->
+<!--    <meta name="viewport" content="width=device-width,initial-scale=1" />-->
+<!--    <title th:text="${trainingCenter.name} + ' · Learn & Train'">Training Center · Learn & Train</title>-->
+
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">-->
+
+<!--    <style>-->
+<!--        :root { &#45;&#45;muted: #6c757d; &#45;&#45;card-radius: 14px; }-->
+<!--        body { font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial; background:#f4f6f8; color:#222; }-->
+<!--        .hero { height:340px; border-radius:var(&#45;&#45;card-radius); overflow:hidden; position:relative; background-size:cover; background-position:center; margin-bottom:24px; box-shadow:0 8px 30px rgba(18,38,63,0.08); }-->
+<!--        .hero-overlay { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45)); display:flex; align-items:flex-end; padding:28px; }-->
+<!--        .hero-title { color:#fff; font-weight:700; font-size:clamp(20px,3.2vw,32px); margin:0; }-->
+<!--        .hero-meta { color:rgba(255,255,255,0.9); margin-top:6px; font-size:0.95rem; }-->
+<!--        .container-main { max-width:1200px; margin:24px auto; padding:0 16px; }-->
+<!--        .card-glass { background:#fff; border-radius:12px; padding:18px; box-shadow:0 6px 22px rgba(18,38,63,0.06); }-->
+<!--        .badge-game { background:linear-gradient(90deg,#198754,#0ea5a0); color:#fff; font-weight:600; margin-right:8px; margin-bottom:8px; }-->
+<!--        .trainee-card { border-radius:12px; overflow:hidden; transition:transform .18s ease, box-shadow .18s ease; cursor:pointer; }-->
+<!--        .trainee-card:hover { transform:translateY(-6px); box-shadow:0 12px 34px rgba(16,24,40,0.12); }-->
+<!--        .trainee-img { height:220px; width:100%; object-fit:cover; display:block; }-->
+<!--        .pill { border-radius:999px; padding:6px 12px; font-weight:600; font-size:0.85rem; }-->
+<!--        .muted { color:var(&#45;&#45;muted); }-->
+<!--        .ach-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:12px; }-->
+<!--        @media (max-width:991px) { .hero { height:260px; } .trainee-img { height:180px; } }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<div class="container-main">-->
+
+<!--    &lt;!&ndash; HERO &ndash;&gt;-->
+<!--    <div class="hero" th:style="'background-image: url(' + ${trainingCenter.imageUrl} + ')'">-->
+<!--        <div class="hero-overlay">-->
+<!--            <div>-->
+<!--                <h1 class="hero-title" th:text="${trainingCenter.name}">Training Center Name</h1>-->
+<!--                <div class="hero-meta">-->
+<!--                    <span th:text="${trainingCenter.address}">123 Main Street</span>-->
+<!--                    <span class="mx-2 muted">•</span>-->
+<!--                    <span th:text="${trainingCenter.district != null ? trainingCenter.district.name : ''}">District</span>-->
+<!--                    <span class="mx-2 muted">•</span>-->
+<!--                    <span th:text="${trainingCenter.state != null ? trainingCenter.state.name : ''}">State</span>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Top Info Row &ndash;&gt;-->
+<!--    <div class="row g-3 mb-4">-->
+<!--        <div class="col-lg-8">-->
+<!--            <div class="card-glass">-->
+<!--                <div class="d-flex justify-content-between align-items-start mb-3">-->
+<!--                    <div>-->
+<!--                        <h4 class="mb-1">About</h4>-->
+<!--                        <p class="muted mb-0" th:text="${trainingCenter.description}">Short description about the training center goes here.</p>-->
+<!--                    </div>-->
+<!--                    <div class="text-end">-->
+<!--                        <p class="mb-1"><strong>Contact</strong></p>-->
+<!--                        <p class="muted mb-1" th:text="${trainingCenter.contactNumber}">+91 98765 43210</p>-->
+<!--                        <a th:href="'mailto:' + ${trainingCenter.email}" class="text-decoration-none muted" th:text="${trainingCenter.email}">email@example.com</a>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <hr>-->
+
+<!--                <div class="d-flex flex-wrap align-items-center gap-3">-->
+<!--                    <div>-->
+<!--                        <h6 class="mb-1">Sports Offered</h6>-->
+<!--                        <div>-->
+<!--                            <span th:each="g : ${trainingCenter.sportsOffered}" class="badge badge-game" th:text="${g.name}">Cricket</span>-->
+<!--                            <span th:if="${#lists.isEmpty(trainingCenter.sportsOffered)}" class="muted">No sports listed</span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <div class="ms-auto text-end">-->
+<!--                        <small class="muted">Trainees</small>-->
+<!--                        <div><strong th:text="${trainingCenter.trainees != null ? trainingCenter.trainees.size() : 0}">0</strong></div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Right column: CTA & address &ndash;&gt;-->
+<!--        <div class="col-lg-4">-->
+<!--            <div class="card-glass">-->
+<!--                <h6 class="mb-2">Location & Actions</h6>-->
+<!--                <p class="muted mb-1"><strong>Address</strong></p>-->
+<!--                <p class="mb-2" th:text="${trainingCenter.address}">Full address here</p>-->
+
+<!--                <div class="d-grid gap-2">-->
+<!--                    <a th:href="'tel:' + ${trainingCenter.contactNumber}" class="btn btn-outline-primary">Call Center</a>-->
+<!--                    <a th:href="'mailto:' + ${trainingCenter.email}" class="btn btn-primary">Send Email</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Filter/Search + Trainee Highlights &ndash;&gt;-->
+<!--    <div class="d-flex align-items-center mb-3 gap-3">-->
+<!--        <div class="flex-grow-1">-->
+<!--            <input id="searchInput" class="form-control" placeholder="Search trainees by name or sport..." oninput="applyFilters()" />-->
+<!--        </div>-->
+
+<!--        <div style="min-width:220px;">-->
+<!--            <select id="sportFilter" class="form-select" onchange="applyFilters()">-->
+<!--                <option value="">All Sports</option>-->
+<!--                <option th:each="g : ${trainingCenter.sportsOffered}" th:value="${g.name}" th:text="${g.name}">Cricket</option>-->
+<!--            </select>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Trainee cards grid &ndash;&gt;-->
+<!--    <div class="row g-4" id="traineeGrid">-->
+<!--        <div class="col-md-6 col-lg-4"-->
+<!--             th:each="trainee : ${trainingCenter.trainees}"-->
+<!--             th:attr="data-id=${trainee.id},-->
+<!--                  data-name=${trainee.name},-->
+<!--                  data-sport=${trainee.sport},-->
+<!--                  data-age=${trainee.age},-->
+<!--                  data-gender=${trainee.gender},-->
+<!--                  data-image=${trainee.imageUrl},-->
+<!--                  data-desc=${trainee.description}">-->
+<!--            <div class="card trainee-card h-100" th:onclick="'openTraineeModal(' + ${trainee.id} + ')'" style="border: none;">-->
+<!--                <img th:src="${trainee.imageUrl != null ? trainee.imageUrl : '/images/default-trainee.jpg'}" class="trainee-img" alt="Trainee image" />-->
+<!--                <div class="p-3">-->
+<!--                    <h5 class="mb-1" th:text="${trainee.name}">Trainee Name</h5>-->
+<!--                    <div class="d-flex align-items-center mb-2 gap-2">-->
+<!--                        <span class="pill bg-primary text-white" th:text="${trainee.sport}">Sport</span>-->
+<!--                        <small class="muted">·</small>-->
+<!--                        <small class="muted" th:text="${trainee.age} + ' yrs'">18 yrs</small>-->
+<!--                        <small class="muted">·</small>-->
+<!--                        <small class="muted" th:text="${trainee.gender}">M</small>-->
+<!--                    </div>-->
+<!--                    <p class="muted mb-2" th:text="${#strings.abbreviate(trainee.description, 120)}">Short bio about trainee or achievements summary.</p>-->
+
+<!--                    <div class="d-flex justify-content-between align-items-center">-->
+<!--                        <div>-->
+<!--                            <button class="btn btn-sm btn-outline-secondary" type="button" th:onclick="'openTraineeModal(' + ${trainee.id} + ')'">View Profile</button>-->
+<!--                        </div>-->
+<!--                        <div>-->
+<!--                            <span class="muted small" th:text="${trainee.achievements != null ? trainee.achievements.size() : 0} + ' achievements'">0 achievements</span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Hidden achievements list for this trainee (modal will read this) &ndash;&gt;-->
+<!--            <ul th:id="'ach-list-' + ${trainee.id}" class="d-none">-->
+<!--                <li th:each="ach : ${trainee.achievements}"-->
+<!--                    th:attr="data-title=${ach.title},-->
+<!--                     data-desc=${ach.description},-->
+<!--                     data-date=${ach.date},-->
+<!--                     data-img=${ach.certificateImageUrl}">-->
+<!--                    <span th:text="${ach.title}">Achievement title</span>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; empty state &ndash;&gt;-->
+<!--        <div th:if="${#lists.isEmpty(trainingCenter.trainees)}" class="col-12">-->
+<!--            <div class="card-glass text-center py-5">-->
+<!--                <h5 class="mb-1">No trainees yet</h5>-->
+<!--                <p class="muted mb-0">This center doesn't have trainee profiles at the moment.</p>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--</div>-->
+
+<!--&lt;!&ndash; Trainee modal &ndash;&gt;-->
+<!--<div class="modal fade" id="traineeModal" tabindex="-1" aria-hidden="true">-->
+<!--    <div class="modal-dialog modal-lg modal-dialog-centered">-->
+<!--        <div class="modal-content" style="border-radius:12px;">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title" id="traineeModalTitle">Trainee Profile</h5>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <div class="d-flex gap-3 mb-3">-->
+<!--                    <img id="modalTraineeImg" src="/images/default-trainee.jpg" alt="img" style="width:160px; height:160px; object-fit:cover; border-radius:10px;" />-->
+<!--                    <div>-->
+<!--                        <h4 id="modalTraineeName">Name</h4>-->
+<!--                        <p class="muted mb-1" id="modalTraineeMeta">Sport · Age · Gender</p>-->
+<!--                        <p id="modalTraineeDesc" class="muted">Full description about trainee...</p>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <hr>-->
+
+<!--                <h6>Achievements</h6>-->
+<!--                <div id="modalAchievements" class="ach-grid mt-3"></div>-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                <a id="contactCenterBtn" class="btn btn-primary" th:href="'mailto:' + ${trainingCenter.email}">Contact Center</a>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>-->
+
+<!--<script>-->
+<!--    const traineeModalEl = document.getElementById('traineeModal');-->
+<!--    const traineeModal = new bootstrap.Modal(traineeModalEl);-->
+
+<!--    function openTraineeModal(id) {-->
+<!--        const container = document.querySelector(`[data-id='${id}']`);-->
+<!--        if (!container) { console.warn('Trainee element not found', id); return; }-->
+
+<!--        const name = container.dataset.name || '';-->
+<!--        const img = container.dataset.image || '/images/default-trainee.jpg';-->
+<!--        const sport = container.dataset.sport || '';-->
+<!--        const age = container.dataset.age || '';-->
+<!--        const gender = container.dataset.gender || '';-->
+<!--        const desc = container.dataset.desc || '';-->
+
+<!--        document.getElementById('traineeModalTitle').textContent = name;-->
+<!--        document.getElementById('modalTraineeImg').src = img;-->
+<!--        document.getElementById('modalTraineeName').textContent = name;-->
+<!--        document.getElementById('modalTraineeMeta').textContent = `${sport} · ${age ? age + ' yrs' : ''} · ${gender}`;-->
+<!--        document.getElementById('modalTraineeDesc').textContent = desc;-->
+
+<!--        const achContainer = document.getElementById('modalAchievements');-->
+<!--        achContainer.innerHTML = '';-->
+
+<!--        const achList = document.getElementById('ach-list-' + id);-->
+<!--        if (achList && achList.children.length) {-->
+<!--            achList.querySelectorAll('li').forEach(li => {-->
+<!--                const title = li.dataset.title || '';-->
+<!--                const adesc = li.dataset.desc || '';-->
+<!--                const adate = li.dataset.date || '';-->
+<!--                const aimg = li.dataset.img || '';-->
+
+<!--                const card = document.createElement('div');-->
+<!--                card.className = 'card p-2';-->
+<!--                card.innerHTML = `-->
+<!--          <div><strong>${escapeHtml(title)}</strong></div>-->
+<!--          <div class="small muted">${escapeHtml(adate)}</div>-->
+<!--          <div class="muted small" style="margin-top:6px;">${escapeHtml(truncate(adesc || '', 120))}</div>-->
+<!--          ${aimg ? `<img src="${aimg}" style="width:100%; height:110px; object-fit:cover; border-radius:6px; margin-top:8px;" />` : ''}-->
+<!--        `;-->
+<!--                achContainer.appendChild(card);-->
+<!--            });-->
+<!--        } else {-->
+<!--            achContainer.innerHTML = '<div class="muted">No achievements listed.</div>';-->
+<!--        }-->
+
+<!--        traineeModal.show();-->
+<!--    }-->
+
+<!--    function escapeHtml(s) {-->
+<!--        return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');-->
+<!--    }-->
+<!--    function truncate(s, n) { return s.length > n ? s.slice(0,n-1) + '…' : s; }-->
+
+<!--    function applyFilters() {-->
+<!--        const search = (document.getElementById('searchInput').value || '').toLowerCase();-->
+<!--        const sport = (document.getElementById('sportFilter').value || '').toLowerCase();-->
+<!--        document.querySelectorAll('#traineeGrid > [data-id]').forEach(el => {-->
+<!--            const name = (el.dataset.name || '').toLowerCase();-->
+<!--            const sp = (el.dataset.sport || '').toLowerCase();-->
+<!--            const matchesSearch = !search || name.includes(search) || sp.includes(search);-->
+<!--            const matchesSport = !sport || sp === sport;-->
+<!--            el.style.display = (matchesSearch && matchesSport) ? '' : 'none';-->
+<!--        });-->
+<!--    }-->
+
+<!--    // fallback default image behavior-->
+<!--    document.querySelectorAll('.trainee-img').forEach(img => img.onerror = () => img.src = '/images/default-trainee.jpg');-->
+<!--</script>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title th:text="${trainingCenter.name} + ' · Learn & Train'">Training Center · Learn & Train</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root { --muted: #6c757d; --card-radius: 14px; }
+        body { font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial; background:#f4f6f8; color:#222; }
+
+        .hero { height:340px; border-radius:var(--card-radius); overflow:hidden; position:relative; background-size:cover; background-position:center; margin-bottom:24px; box-shadow:0 8px 30px rgba(18,38,63,0.08); }
+        .hero-overlay { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45)); display:flex; align-items:flex-end; padding:28px; }
+        .hero-title { color:#fff; font-weight:700; font-size:clamp(20px,3.2vw,32px); margin:0; }
+        .hero-meta { color:rgba(255,255,255,0.9); margin-top:6px; font-size:0.95rem; }
+
+        .container-main { max-width:1200px; margin:24px auto; padding:0 16px; }
+        .card-glass { background:#fff; border-radius:12px; padding:18px; box-shadow:0 6px 22px rgba(18,38,63,0.06); }
+
+        .badge-game { background:linear-gradient(90deg,#198754,#0ea5a0); color:#fff; font-weight:600; margin-right:8px; margin-bottom:8px; }
+
+        .trainee-card { border-radius:12px; overflow:hidden; transition:transform .18s ease, box-shadow .18s ease; cursor:pointer; }
+        .trainee-card:hover { transform:translateY(-6px); box-shadow:0 12px 34px rgba(16,24,40,0.12); }
+        .trainee-img { width:100%; height:220px; object-fit:cover; display:block; border-radius:8px; transition: transform .3s ease; }
+        .trainee-card:hover .trainee-img { transform: scale(1.05); } /* subtle zoom on hover */
+
+        .pill { border-radius:999px; padding:6px 12px; font-weight:600; font-size:0.85rem; }
+        .muted { color:var(--muted); }
+
+        .ach-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:12px; }
+
+        @media (max-width:991px) {
+            .hero { height:260px; }
+            .trainee-img { height:180px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-main">
+
+    <!-- HERO -->
+    <div class="hero" th:style="'background-image: url(' + ${trainingCenter.imageUrl} + ')'">
+        <div class="hero-overlay">
+            <div>
+                <h1 class="hero-title" th:text="${trainingCenter.name}">Training Center Name</h1>
+                <div class="hero-meta">
+                    <span th:text="${trainingCenter.address}">123 Main Street</span>
+                    <span class="mx-2 muted">•</span>
+                    <span th:text="${trainingCenter.district != null ? trainingCenter.district.name : ''}">District</span>
+                    <span class="mx-2 muted">•</span>
+                    <span th:text="${trainingCenter.state != null ? trainingCenter.state.name : ''}">State</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Info Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-8">
+            <div class="card-glass">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h4 class="mb-1">About</h4>
+                        <p class="muted mb-0" th:text="${trainingCenter.description}">Short description about the training center goes here.</p>
+                    </div>
+                    <div class="text-end">
+                        <p class="mb-1"><strong>Contact</strong></p>
+                        <p class="muted mb-1" th:text="${trainingCenter.contactNumber}">+91 98765 43210</p>
+                        <a th:href="'mailto:' + ${trainingCenter.email}" class="text-decoration-none muted" th:text="${trainingCenter.email}">email@example.com</a>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <div>
+                        <h6 class="mb-1">Sports Offered</h6>
+                        <div>
+                            <span th:each="g : ${trainingCenter.sportsOffered}" class="badge badge-game" th:text="${g.name}">Cricket</span>
+                            <span th:if="${#lists.isEmpty(trainingCenter.sportsOffered)}" class="muted">No sports listed</span>
+                        </div>
+                    </div>
+
+                    <div class="ms-auto text-end">
+                        <small class="muted">Trainees</small>
+                        <div><strong th:text="${trainingCenter.trainees != null ? trainingCenter.trainees.size() : 0}">0</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card-glass">
+                <h6 class="mb-2">Location & Actions</h6>
+                <p class="muted mb-1"><strong>Address</strong></p>
+                <p class="mb-2" th:text="${trainingCenter.address}">Full address here</p>
+
+                <div class="d-grid gap-2">
+                    <a th:href="'tel:' + ${trainingCenter.contactNumber}" class="btn btn-outline-primary">Call Center</a>
+                    <a th:href="'mailto:' + ${trainingCenter.email}" class="btn btn-primary">Send Email</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter/Search + Trainee Highlights -->
+    <div class="d-flex align-items-center mb-3 gap-3">
+        <div class="flex-grow-1">
+            <input id="searchInput" class="form-control" placeholder="Search trainees by name or sport..." oninput="applyFilters()" />
+        </div>
+        <div style="min-width:220px;">
+            <select id="sportFilter" class="form-select" onchange="applyFilters()">
+                <option value="">All Sports</option>
+                <option th:each="g : ${trainingCenter.sportsOffered}" th:value="${g.name}" th:text="${g.name}">Cricket</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Trainee cards grid -->
+    <div class="row g-4" id="traineeGrid">
+        <div class="col-md-6 col-lg-4"
+             th:each="trainee : ${trainingCenter.trainees}"
+             th:attr="data-id=${trainee.id},
+                  data-name=${trainee.name},
+                  data-sport=${trainee.sport},
+                  data-age=${trainee.age},
+                  data-gender=${trainee.gender},
+                  data-image=${trainee.imageUrl},
+                  data-desc=${trainee.description}">
+            <div class="card trainee-card h-100" th:onclick="'openTraineeModal(' + ${trainee.id} + ')'" style="border: none;">
+                <img th:src="${trainee.imageUrl != null ? trainee.imageUrl : '/images/default-trainee.jpg'}" class="trainee-img" alt="Trainee image" />
+                <div class="p-3">
+                    <h5 class="mb-1" th:text="${trainee.name}">Trainee Name</h5>
+                    <div class="d-flex align-items-center mb-2 gap-2">
+                        <span class="pill bg-primary text-white" th:text="${trainee.sport}">Sport</span>
+                        <small class="muted">·</small>
+                        <small class="muted" th:text="${trainee.age} + ' yrs'">18 yrs</small>
+                        <small class="muted">·</small>
+                        <small class="muted" th:text="${trainee.gender}">M</small>
+                    </div>
+                    <p class="muted mb-2" th:text="${#strings.abbreviate(trainee.description, 120)}">Short bio about trainee.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button class="btn btn-sm btn-outline-secondary" type="button" th:onclick="'openTraineeModal(' + ${trainee.id} + ')'">View Profile</button>
+                        </div>
+                        <div>
+                            <span class="muted small" th:text="${trainee.achievements != null ? trainee.achievements.size() : 0} + ' achievements'">0 achievements</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden achievements list for this trainee -->
+            <ul th:id="'ach-list-' + ${trainee.id}" class="d-none">
+                <li th:each="ach : ${trainee.achievements}"
+                    th:attr="data-title=${ach.title},
+                     data-desc=${ach.description},
+                     data-date=${ach.date},
+                     data-img=${ach.certificateImageUrl}">
+                    <span th:text="${ach.title}">Achievement title</span>
+                </li>
+            </ul>
+        </div>
+
+        <div th:if="${#lists.isEmpty(trainingCenter.trainees)}" class="col-12">
+            <div class="card-glass text-center py-5">
+                <h5 class="mb-1">No trainees yet</h5>
+                <p class="muted mb-0">This center doesn't have trainee profiles at the moment.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Trainee modal -->
+<div class="modal fade" id="traineeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="traineeModalTitle">Trainee Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex gap-3 mb-3">
+                    <img id="modalTraineeImg" src="/images/default-trainee.jpg" alt="img" style="width:160px; height:160px; object-fit:contain; border-radius:10px;" />
+                    <div>
+                        <h4 id="modalTraineeName">Name</h4>
+                        <p class="muted mb-1" id="modalTraineeMeta">Sport · Age · Gender</p>
+                        <p id="modalTraineeDesc" class="muted">Full description about trainee...</p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h6>Achievements</h6>
+                <div id="modalAchievements" class="ach-grid mt-3"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <a id="contactCenterBtn" class="btn btn-primary" th:href="'mailto:' + ${trainingCenter.email}">Contact Center</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const traineeModalEl = document.getElementById('traineeModal');
+    const traineeModal = new bootstrap.Modal(traineeModalEl);
+
+    function openTraineeModal(id) {
+        const container = document.querySelector(`[data-id='${id}']`);
+        if (!container) return;
+
+        const name = container.dataset.name || '';
+        const img = container.dataset.image || '/images/default-trainee.jpg';
+        const sport = container.dataset.sport || '';
+        const age = container.dataset.age || '';
+        const gender = container.dataset.gender || '';
+        const desc = container.dataset.desc || '';
+
+        document.getElementById('traineeModalTitle').textContent = name;
+        document.getElementById('modalTraineeImg').src = img;
+        document.getElementById('modalTraineeName').textContent = name;
+        document.getElementById('modalTraineeMeta').textContent = `${sport} · ${age ? age + ' yrs' : ''} · ${gender}`;
+        document.getElementById('modalTraineeDesc').textContent = desc;
+
+        const achContainer = document.getElementById('modalAchievements');
+        achContainer.innerHTML = '';
+
+        const achList = document.getElementById('ach-list-' + id);
+        if (achList && achList.children.length) {
+            achList.querySelectorAll('li').forEach(li => {
+                const title = li.dataset.title || '';
+                const adesc = li.dataset.desc || '';
+                const adate = li.dataset.date || '';
+                const aimg = li.dataset.img || '';
+
+                const card = document.createElement('div');
+                card.className = 'card p-2';
+                card.innerHTML = `
+                    <div><strong>${escapeHtml(title)}</strong></div>
+                    <div class="small muted">${escapeHtml(adate)}</div>
+                    <div class="muted small mt-1">${escapeHtml(truncate(adesc || '', 120))}</div>
+                    ${aimg ? `<img src="${aimg}" style="max-width:100%; height:auto; object-fit:contain; border-radius:6px; margin-top:8px;" />` : ''}
+                `;
+                achContainer.appendChild(card);
+            });
+        } else {
+            achContainer.innerHTML = '<div class="muted">No achievements listed.</div>';
+        }
+
+        traineeModal.show();
+    }
+
+    function escapeHtml(s) {
+        return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+    }
+    function truncate(s, n) { return s.length > n ? s.slice(0,n-1) + '…' : s; }
+
+    function applyFilters() {
+        const search = (document.getElementById('searchInput').value || '').toLowerCase();
+        const sport = (document.getElementById('sportFilter').value || '').toLowerCase();
+        document.querySelectorAll('#traineeGrid > [data-id]').forEach(el => {
+            const name = (el.dataset.name || '').toLowerCase();
+            const sp = (el.dataset.sport || '').toLowerCase();
+            const matchesSearch = !search || name.includes(search) || sp.includes(search);
+            const matchesSport = !sport || sp === sport;
+            el.style.display = (matchesSearch && matchesSport) ? '' : 'none';
+        });
+    }
+
+    document.querySelectorAll('.trainee-img').forEach(img => img.onerror = () => img.src = '/images/default-trainee.jpg');
+</script>
+
+</body>
+</html>

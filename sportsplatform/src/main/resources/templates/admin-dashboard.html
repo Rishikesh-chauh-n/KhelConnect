@@ -276,6 +276,10 @@
             <a href="#event-form"><i class="fa-solid fa-calendar-days me-2"></i>Add Event</a>
             <a href="#verify-certificates"><i class="fa-solid fa-check-circle me-2"></i>Verify Certificates</a>
             <a href="#verify-medals"><i class="fa-solid fa-medal me-2"></i>Verify Medals</a>
+            <a href="/admin/save-venue"><i class="fa-solid fa-location-dot me-2"></i>Add Venue</a>
+            <a href="/admin/save-training-center"><i class="fa-solid fa-dumbbell me-2"></i>Add Training Center</a>
+            <a href="/admin/gallery"><i class="fa-solid fa-image me-2"></i>Gallery</a>
+
         </div>
 
         <!-- Main Content -->
@@ -341,13 +345,69 @@
                         </select>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="selectState" class="form-label">Select State</label>
-                        <select th:field="*{state.id}" class="form-select" id="selectState" required>
-                            <option selected disabled value="">Select a state</option>
-                            <option th:each="s : ${states}" th:value="${s.id}" th:text="${s.name}"></option>
+                    <!-- Select State -->
+                    <label for="stateSelect">Select State</label>
+                    <select id="stateSelect" name="stateId" class="form-select">
+                        <option value="">-- Select State --</option>
+                        <option th:each="state : ${states}" th:value="${state.id}" th:text="${state.name}"></option>
+                    </select>
+
+                    <!-- Select District -->
+                    <div id="districtContainer">
+                        <label for="districtSelect">Select District</label>
+                        <select id="districtSelect" name="districtId" class="form-select">
+                            <option value="">-- Select District --</option>
                         </select>
                     </div>
+
+                    <!-- Manual District Input (hidden by default) -->
+                    <div id="manualDistrictContainer" style="display:none;">
+                        <label for="manualDistrict">Enter District</label>
+                        <input type="text" id="manualDistrict" name="manualDistrict" placeholder="Enter district name" class="form-input" />
+                    </div>
+
+<script>
+
+                    document.getElementById('stateSelect').addEventListener('change', function () {
+                    const stateId = this.value;
+                    const districtSelect = document.getElementById('districtSelect');
+                    const manualDistrictContainer = document.getElementById('manualDistrictContainer');
+
+                    if (stateId) {
+                    fetch(`/districts/by-state/${stateId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                    districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+
+                    if (data.length > 0) {
+                    // Populate dropdown with districts
+                    data.forEach(d => {
+                    districtSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                    });
+
+                    districtSelect.style.display = 'block';
+                    manualDistrictContainer.style.display = 'none';
+                    } else {
+                    // No districts found -> Show manual input
+                    districtSelect.style.display = 'none';
+                    manualDistrictContainer.style.display = 'block';
+                    }
+                    })
+                    .catch(err => {
+                    console.error("Error fetching districts:", err);
+                    districtSelect.style.display = 'none';
+                    manualDistrictContainer.style.display = 'block';
+                    });
+                    } else {
+                    districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+                    districtSelect.style.display = 'block';
+                    manualDistrictContainer.style.display = 'none';
+                    }
+                    });
+
+
+</script>
+
 
                     <div class="mb-3">
                         <label for="eventDate" class="form-label">Event Date</label>
@@ -367,53 +427,6 @@
             </div>
 
 
-
-
-            <form method="post" th:action="@{/admin/add-venue}" th:object="${venue}" enctype="multipart/form-data">
-
-                <div class="mb-3">
-                    <label for="venueName" class="form-label">Venue Name</label>
-                    <input type="text" th:field="*{name}" class="form-control" id="venueName" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="venueLocation" class="form-label">Location</label>
-                    <input type="text" th:field="*{location}" class="form-control" id="venueLocation" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="selectGame" class="form-label">Select Game</label>
-                    <select th:field="*{game.id}" class="form-select" required>
-                        <option selected disabled value="">Select a game</option>
-                        <option th:each="g : ${games}" th:value="${g.id}" th:text="${g.name}"></option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="selectState" class="form-label">Select State</label>
-                    <select th:field="*{state.id}" class="form-select" required>
-                        <option selected disabled value="">Select a state</option>
-                        <option th:each="s : ${states}" th:value="${s.id}" th:text="${s.name}"></option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" step="0.01" th:field="*{price}" class="form-control" id="price" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea th:field="*{description}" class="form-control" id="description" rows="3" placeholder="Add timing, slot details, etc. here..." required></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="venueImage" class="form-label">Venue Image</label>
-                    <input type="file" name="image" class="form-control" id="venueImage" accept="image/*" required>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Add Venue</button>
-            </form>
 
 
             <!-- Verify Certificates -->
@@ -463,3 +476,242 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--            <form method="post" th:action="@{/admin/add-venue}" th:object="${venue}" enctype="multipart/form-data">-->
+
+<!--                <div class="mb-3">-->
+<!--                    <label for="venueName" class="form-label">Venue Name</label>-->
+<!--                    <input type="text" th:field="*{name}" class="form-control" id="venueName" required>-->
+<!--                </div>-->
+
+<!--                <div class="mb-3">-->
+<!--                    <label for="venueLocation" class="form-label">Location</label>-->
+<!--                    <input type="text" th:field="*{location}" class="form-control" id="venueLocation" required>-->
+<!--                </div>-->
+
+
+<!--                &lt;!&ndash; State Dropdown &ndash;&gt;-->
+<!--                <div class="mb-3">-->
+<!--                    <label for="stateSelect" class="form-label">Select State</label>-->
+<!--                    <select id="stateSelect" th:field="*{state}" class="form-select" required>-->
+<!--                        <option selected disabled value="">Select a state</option>-->
+<!--                        <option th:each="s : ${states}" th:value="${s.id}" th:text="${s.name}"></option>-->
+<!--                    </select>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Game Multi-select &ndash;&gt;-->
+<!--                <style>-->
+<!--                    select.form-select option:checked {-->
+<!--                        background-color: #007bff; /* Bootstrap Primary Blue */-->
+<!--                        color: white;-->
+<!--                    }-->
+<!--                </style>-->
+
+<!--                <label>Select Games</label>-->
+<!--                <select multiple class="form-select" th:field="*{games}" required>-->
+<!--                    <option th:each="g : ${games}" th:value="${g.id}" th:text="${g.name}"></option>-->
+<!--                </select>-->
+
+
+
+
+
+
+<!--                <div class="mb-3">-->
+<!--                    <label for="price" class="form-label">Price</label>-->
+<!--                    <input type="number" step="0.01" th:field="*{price}" class="form-control" id="price" required>-->
+<!--                </div>-->
+
+<!--                <div class="mb-3">-->
+<!--                    <label for="description" class="form-label">Description</label>-->
+<!--                    <textarea th:field="*{description}" class="form-control" id="description" rows="3" placeholder="Add timing, slot details, etc. here..." required></textarea>-->
+<!--                </div>-->
+
+<!--                <div class="mb-3">-->
+<!--                    <label for="venueImage" class="form-label">Venue Image</label>-->
+<!--                    <input type="file" name="venueImage" class="form-control" id="venueImage" accept="image/*" required>-->
+<!--                </div>-->
+
+<!--                <button type="submit" class="btn btn-primary">Add Venue</button>-->
+<!--            </form>-->
+
+
+
+
+
+
+
+
+
+
+<!--            <form th:action="@{/admin/add-venue}" method="post" th:object="${venue}" enctype="multipart/form-data">-->
+<!--                &lt;!&ndash; Venue Name &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Venue Name:</label>-->
+<!--                    <input type="text" th:field="*{name}" required />-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Venue Location &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Location:</label>-->
+<!--                    <input type="text" th:field="*{location}" required />-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; State Dropdown &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Select State:</label>-->
+<!--                    <select id="stateDropdown" name="stateId" required>-->
+<!--                        <option value="" disabled selected>Select a state</option>-->
+<!--                        <option th:each="s : ${states}" th:value="${s.id}" th:text="${s.name}"></option>-->
+<!--                    </select>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; District Dropdown &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Select District:</label>-->
+<!--                    <select th:field="*{district.id}" id="districtDropdown">-->
+<!--                        <option value="" disabled selected>Select a district</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Manual District Input (Optional) &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Or Enter District Manually:</label>-->
+<!--                    <input type="text" name="manualDistrictName" placeholder="Enter new district" />-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Venue Description &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Description:</label>-->
+<!--                    <textarea th:field="*{description}" required></textarea>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Amenities &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Amenities (comma separated):</label>-->
+<!--                    <input type="text" th:field="*{amenities}" placeholder="e.g. Parking, Washroom, WiFi" />-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Venue Image &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Upload Venue Image:</label>-->
+<!--                    <input type="file" name="venueImage" accept="image/*" />-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Game Details (Repeatable) &ndash;&gt;-->
+<!--                <div id="gameDetailsContainer">-->
+<!--                    <div th:each="detail, iterStat : *{gameDetailsList}" class="game-detail-block">-->
+<!--                        <h4>Game Detail <span th:text="${iterStat.index + 1}"></span></h4>-->
+
+<!--                        &lt;!&ndash; Game Dropdown &ndash;&gt;-->
+<!--                        <label>Game:</label>-->
+<!--                        <select th:field="*{gameDetailsList[__${iterStat.index}__].game.id}" required>-->
+<!--                            <option value="">Select a game</option>-->
+<!--                            <option th:each="g : ${games}" th:value="${g.id}" th:text="${g.name}"></option>-->
+<!--                        </select>-->
+
+<!--                        &lt;!&ndash; Start Time &ndash;&gt;-->
+<!--                        <label>Start Time:</label>-->
+<!--                        <input type="time" th:field="*{gameDetailsList[__${iterStat.index}__].startTime}" required />-->
+
+<!--                        &lt;!&ndash; End Time &ndash;&gt;-->
+<!--                        <label>End Time:</label>-->
+<!--                        <input type="time" th:field="*{gameDetailsList[__${iterStat.index}__].endTime}" required />-->
+
+<!--                        &lt;!&ndash; Slots Per Hour &ndash;&gt;-->
+<!--                        <label>Slots Per Hour:</label>-->
+<!--                        <input type="number" th:field="*{gameDetailsList[__${iterStat.index}__].slotsPerHour}" required />-->
+
+<!--                        &lt;!&ndash; Price Per Slot &ndash;&gt;-->
+<!--                        <label>Price Per Slot:</label>-->
+<!--                        <input type="number" th:field="*{gameDetailsList[__${iterStat.index}__].pricePerSlot}" required />-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Add More Game Info Button &ndash;&gt;-->
+<!--                <button type="button" onclick="addGameDetail()">+ Add More Game Info</button>-->
+
+<!--                &lt;!&ndash; Submit &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <button type="submit">Save Venue</button>-->
+<!--                </div>-->
+<!--            </form>-->
+
+<!--            &lt;!&ndash; 🧠 JavaScript for cascading dropdown and dynamic game details &ndash;&gt;-->
+<!--            <script>-->
+<!--                // 🟡 Load districts by state-->
+<!--                document.getElementById('stateDropdown').addEventListener('change', function () {-->
+<!--                    const stateId = this.value;-->
+<!--                    fetch('/get-districts/' + stateId)-->
+<!--                        .then(res => res.json())-->
+<!--                        .then(data => {-->
+<!--                            const districtDropdown = document.getElementById('districtDropdown');-->
+<!--                            districtDropdown.innerHTML = '<option value="">&#45;&#45; Select District &#45;&#45;</option>';-->
+<!--                            data.forEach(d => {-->
+<!--                                const option = document.createElement('option');-->
+<!--                                option.value = d.id;-->
+<!--                                option.text = d.name;-->
+<!--                                districtDropdown.appendChild(option);-->
+<!--                            });-->
+<!--                        });-->
+<!--                });-->
+
+<!--                // 🔁 Add more VenueGameDetails-->
+<!--                function addGameDetail() {-->
+<!--                    const container = document.getElementById("gameDetailsContainer");-->
+<!--                    const index = container.children.length;-->
+
+<!--                    const block = document.createElement("div");-->
+<!--                    block.classList.add("game-detail-block");-->
+<!--                    block.innerHTML = `-->
+<!--            <h4>Game Detail ${index + 1}</h4>-->
+<!--            <label>Game:</label>-->
+<!--            <select name="gameDetailsList[${index}].game.id" required>-->
+<!--                <option value="">Select a game</option>-->
+<!--                &lt;!&ndash; Server will populate via backend &ndash;&gt;-->
+<!--                ${[...document.querySelectorAll("select[name*='game.id'] option")].map(o => o.outerHTML).join('')}-->
+<!--            </select>-->
+
+<!--            <label>Start Time:</label>-->
+<!--            <input type="time" name="gameDetailsList[${index}].startTime" required />-->
+
+<!--            <label>End Time:</label>-->
+<!--            <input type="time" name="gameDetailsList[${index}].endTime" required />-->
+
+<!--            <label>Slots Per Hour:</label>-->
+<!--            <input type="number" name="gameDetailsList[${index}].slotsPerHour" required />-->
+
+<!--            <label>Price Per Slot:</label>-->
+<!--            <input type="number" name="gameDetailsList[${index}].pricePerSlot" required />-->
+<!--        `;-->
+<!--                    container.appendChild(block);-->
+<!--                }-->
+<!--            </script>-->
+
+
+

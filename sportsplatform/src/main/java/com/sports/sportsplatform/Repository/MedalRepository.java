@@ -10,4 +10,7 @@ public interface MedalRepository extends JpaRepository<Medal, Long> {
 
     List<Medal> findByUserProfile(UserProfile userProfile);
 
+    List<Medal> findByUserProfileAndVerifiedTrue(UserProfile profile);
+
+
 }

@@ -20,7 +20,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findFirstByGameIdOrderByDateAsc(Long gameId);
 
 
-
+    List<Event> findByGameName(String gameName);
 
 
 

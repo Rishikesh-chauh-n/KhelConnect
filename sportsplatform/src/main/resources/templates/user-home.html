@@ -278,50 +278,115 @@
 <!--Featured Games-->
 
 
-<div class="featured-section">
-    <h2 class="text-xl font-bold mb-4">Featured Games</h2>
-    <div class="grid grid-cols-3 gap-4">
-        <div th:each="event : ${featuredGames}" class="border p-2">
-            <img th:src="${event.imagePath}" alt="Featured Game" class="w-full h-48 object-cover rounded shadow-md" />
-            <p th:text="${event.name}"></p>
+<!--<div class="featured-section">-->
+<!--    <h2 class="text-xl font-bold mb-4">Featured Games</h2>-->
+<!--    <div class="grid grid-cols-3 gap-4">-->
+<!--        <div th:each="event : ${featuredGames}" class="border p-2">-->
+<!--            <img th:src="${event.imagePath}" alt="Featured Game" class="w-full h-48 object-cover rounded shadow-md" />-->
+<!--            <p th:text="${event.name}"></p>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--</div>-->
+
+
+<!-- Featured Games -->
+<div class="featured-section py-5">
+    <h2 class="text-xl font-bold mb-4 text-center">Featured Games</h2>
+
+    <div class="row row-cols-1 row-cols-md-5 g-4">
+        <div class="col" th:each="event : ${featuredGames}">
+            <a th:href="@{'/games/' + ${event.id}}" class="text-decoration-none text-dark">
+                <div class="card category-card">
+                    <img th:src="${event.imagePath}" class="card-img-top" th:alt="${event.name}">
+                    <div class="card-body text-center">
+                        <h6 class="mb-0" th:text="${event.name}"></h6>
+                    </div>
+                </div>
+            </a>
         </div>
     </div>
-
 </div>
+
+
+
+<!--&lt;!&ndash; Top Venues &ndash;&gt;-->
+<!--<div class="container py-5">-->
+<!--    <h2 class="section-title text-center">-->
+<!--        <a href="/venues" class="text-decoration-none text-dark">Top Venues</a>-->
+<!--    </h2>-->
+<!--    <div class="row row-cols-1 row-cols-md-3 g-4">-->
+<!--        &lt;!&ndash; Loop over venues &ndash;&gt;-->
+<!--        <div class="col" th:each="venue : ${topVenues}">-->
+<!--            <div class="card venue-card h-100">-->
+<!--                <a th:href="@{'/venues/' + ${venue.id}}">-->
+<!--                    <img th:src="${venue.imagePath}" class="card-img-top" alt="Venue Image">-->
+<!--                </a>-->
+<!--                <div class="card-body">-->
+<!--                    <div class="d-flex justify-content-between align-items-center">-->
+<!--                        <h5 class="card-title mb-0" th:text="${venue.name}">Venue Name</h5>-->
+<!--                        <small class="text-muted">₹<span th:text="${venue.price}">0</span> /hr</small>-->
+<!--                    </div>-->
+<!--                    <p class="card-text mt-2" th:text="${venue.location}">Venue Location</p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
 
 
 <!-- Top Venues -->
-<div class="container py-5">
-    <h2 class="section-title text-center">
-        <a href="/venues" class="text-decoration-none text-dark">Top Venues</a>
+<div class="venue-section py-5">
+    <h2 class="text-xl font-bold mb-4 text-center">
+        <a href="/venues" class="text-blue-600 hover:underline">Top Venues</a>
     </h2>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col">
-            <div class="card venue-card">
-                <a href="/venues">
-                    <img src="/images/turf99.jpg" class="card-img-top" alt="Top Venue">
-                </a>
-            </div>
+
+    <div class="row row-cols-1 row-cols-md-5 g-4">
+        <div class="col" th:each="venue : ${topVenues}">
+            <a th:href="@{'/venues/' + ${venue.id}}" class="text-decoration-none text-dark">
+                <div class="card category-card">
+                    <img th:src="${venue.imagePath}" class="card-img-top" th:alt="${venue.name}">
+                    <div class="card-body text-center">
+                        <h6 class="mb-1" th:text="${venue.name}"></h6>
+                        <small class="text-muted">
+                            📍 <span th:text="${venue.location}"></span>
+                        </small>
+                    </div>
+                </div>
+            </a>
         </div>
     </div>
 </div>
 
-<!-- Learn & Train Section -->
-<div class="container py-5">
-    <h2 class="section-title text-center">
-        <a href="/learn" class="text-decoration-none text-dark">Learn & Train</a>
+
+
+
+
+
+<!-- Learn & Train -->
+<div class="trainingcenter-section py-5">
+    <h2 class="text-xl font-bold mb-4 text-center">
+        <a href="/trainingcenters" class="text-blue-600 hover:underline">Learn & Train</a>
     </h2>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col">
-            <div class="card">
-                <a href="/learn">
-                    <img src="/images/volleyball-tips.jpg" class="card-img-top" alt="Learn & Train">
-                </a>
-            </div>
+
+    <div class="row row-cols-1 row-cols-md-5 g-4">
+        <div class="col" th:each="center : ${trainingCenters}">
+            <a th:href="@{'/trainingcenters/' + ${center.id}}" class="text-decoration-none text-dark">
+                <div class="card category-card">
+                    <img th:src="${center.imageUrl}" class="card-img-top" th:alt="${center.name}">
+                    <div class="card-body text-center">
+                        <h6 class="mb-1" th:text="${center.name}"></h6>
+                        <small class="text-muted">
+                            📍 <span th:text="${center.address}"></span>
+                        </small>
+                    </div>
+                </div>
+            </a>
         </div>
     </div>
 </div>
+
 
 
 

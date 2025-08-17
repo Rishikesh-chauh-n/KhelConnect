@@ -25,9 +25,8 @@ public class UserProfile {
 
     private int fitnessScore;
 
-    @ManyToOne
-    @JoinColumn(name = "game_id")
-    private Game selectedGame;
+
+    private Long selectedGame;
 
     @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Medal> medals;
