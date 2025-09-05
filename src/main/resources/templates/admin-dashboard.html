@@ -1,0 +1,717 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Admin Dashboard</title>-->
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">-->
+<!--    <style>-->
+<!--        body {-->
+<!--            background-color: #f8f9fa;-->
+<!--        }-->
+
+<!--        html {-->
+<!--            scroll-behavior: smooth;-->
+<!--        }-->
+
+<!--        .sidebar {-->
+<!--            background-color: #1e293b;-->
+<!--            min-height: 100vh;-->
+<!--            color: #ffffff;-->
+<!--            position: sticky;-->
+<!--            top: 0;-->
+<!--        }-->
+
+<!--        .sidebar a {-->
+<!--            color: #d1d5db;-->
+<!--            text-decoration: none;-->
+<!--            display: block;-->
+<!--            padding: 12px 20px;-->
+<!--            border-radius: 8px;-->
+<!--        }-->
+
+<!--        .sidebar a:hover {-->
+<!--            background-color: #334155;-->
+<!--            color: #ffffff;-->
+<!--        }-->
+
+<!--        .form-section {-->
+<!--            background-color: #ffffff;-->
+<!--            padding: 30px;-->
+<!--            border-radius: 12px;-->
+<!--            box-shadow: 0 4px 8px rgba(0,0,0,0.05);-->
+<!--            margin-bottom: 40px;-->
+<!--            scroll-margin-top: 80px; /* Prevents overlap if header exists */-->
+<!--        }-->
+
+<!--        footer {-->
+<!--            text-align: center;-->
+<!--            font-size: 14px;-->
+<!--            color: #6c757d;-->
+<!--            margin-top: 40px;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<div class="container-fluid">-->
+<!--    <div class="row">-->
+<!--        &lt;!&ndash; Sidebar &ndash;&gt;-->
+<!--        <div class="col-md-2 sidebar py-4">-->
+<!--            <h4 class="text-center mb-4">Admin Panel</h4>-->
+<!--            <a href="#state-form"><i class="fa-solid fa-map-pin me-2"></i>Add State</a>-->
+<!--            <a href="#game-form"><i class="fa-solid fa-gamepad me-2"></i>Add Game</a>-->
+<!--            <a href="#event-form"><i class="fa-solid fa-calendar-days me-2"></i>Add Event</a>-->
+<!--            <a href="#verify-certificates"><i class="fa-solid fa-check-circle me-2"></i>Verify Certificates</a>-->
+<!--            <a href="#verify-medals"><i class="fa-solid fa-medal me-2"></i>Verify Medals</a>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Main Content &ndash;&gt;-->
+<!--        <div class="col-md-10 py-4 px-5">-->
+<!--            <h2 class="mb-4">Welcome, Admin</h2>-->
+
+<!--            &lt;!&ndash; Add State Form &ndash;&gt;-->
+<!--            <div id="state-form" class="form-section">-->
+<!--                <h4 class="mb-3">Add New State</h4>-->
+<!--                <form method="post" action="/admin/add-state" th:object="${state}">-->
+<!--                    <div class="mb-3">-->
+<!--                        <label for="stateName" class="form-label">State Name</label>-->
+<!--                        <input type="text" class="form-control" id="stateName" placeholder="Enter state name">-->
+<!--                    </div>-->
+<!--                    <button type="submit" class="btn btn-primary">Add State</button>-->
+<!--                </form>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Add Game Form &ndash;&gt;-->
+<!--            <div id="game-form" class="form-section">-->
+<!--                <h4 class="mb-3">Add New Game</h4>-->
+
+<!--                    <form method="post" action="/admin/add-game" th:object="${game}" enctype="multipart/form-data">-->
+
+<!--                <div class="mb-3">-->
+<!--                        <label for="gameName" class="form-label">Game Name</label>-->
+<!--                        <input type="text" class="form-control" id="gameName" placeholder="Enter game name">-->
+<!--                    </div>-->
+<!--                    <div class="mb-3">-->
+<!--                        <label for="gameLogo" class="form-label">Game Logo</label>-->
+<!--                        <input type="file" class="form-control" id="gameLogo">-->
+<!--                    </div>-->
+<!--                    <button type="submit" class="btn btn-primary">Add Game</button>-->
+<!--                </form>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Add Event Form &ndash;&gt;-->
+<!--            <div id="event-form" class="form-section">-->
+<!--                <h4 class="mb-3">Add New Event</h4>-->
+<!--                <form method="post" action="/admin/add-event"> &lt;!&ndash; adjust action as needed &ndash;&gt;-->
+<!--                    <div class="mb-3">-->
+<!--                        <label for="eventName" class="form-label">Event Name</label>-->
+<!--                        <input type="text" class="form-control" id="eventName" name="name" placeholder="Enter event name" required>-->
+<!--                    </div>-->
+
+<!--                    <div class="mb-3">-->
+<!--                        <label for="eventLocation" class="form-label">Location</label>-->
+<!--                        <input type="text" class="form-control" id="eventLocation" name="location" placeholder="Enter event location" required>-->
+<!--                    </div>-->
+
+<!--                    <div class="mb-3">-->
+<!--                        <label for="selectGame" class="form-label">Select Game</label>-->
+<!--                        <select class="form-select" id="selectGame" name="game.id" required>-->
+<!--                            <option selected disabled>Select a game</option>-->
+<!--                            &lt;!&ndash; These options should ideally come dynamically from server &ndash;&gt;-->
+<!--                            <option value="1">Football</option>-->
+<!--                            <option value="2">Cricket</option>-->
+<!--                            <option value="3">Basketball</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+
+<!--                    <div class="mb-3">-->
+<!--                        <label for="selectState" class="form-label">Select State</label>-->
+<!--                        <select class="form-select" id="selectState" name="state.id" required>-->
+<!--                            <option selected disabled>Select a state</option>-->
+<!--                            &lt;!&ndash; These options should also come dynamically &ndash;&gt;-->
+<!--                            <option value="1">Punjab</option>-->
+<!--                            <option value="2">Maharashtra</option>-->
+<!--                            <option value="3">Karnataka</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+
+<!--                    <div class="mb-3">-->
+<!--                        <label for="eventDate" class="form-label">Event Date</label>-->
+<!--                        <input type="date" class="form-control" id="eventDate" name="date" required>-->
+<!--                    </div>-->
+
+<!--                    <button type="submit" class="btn btn-primary">Add Event</button>-->
+<!--                </form>-->
+<!--            </div>-->
+
+
+
+<!--            &lt;!&ndash; Verify Certificates &ndash;&gt;-->
+<!--            <div id="verify-certificates" class="form-section">-->
+<!--                <h4 class="mb-3">Verify Certificates</h4>-->
+
+<!--                <div th:each="certificate, iterStat : ${certificates}" class="card mb-3 p-3">-->
+<!--                    <p><strong>Certificate ID:</strong> <span th:text="${certificate.id}"></span></p>-->
+
+<!--                    <p><strong>Certificate Image:</strong></p>-->
+<!--                    <img th:src="${certificateImages[iterStat.index]}"-->
+<!--                         alt="Certificate Image"-->
+<!--                         class="img-fluid mb-2"-->
+<!--                         style="max-width: 300px;" />-->
+
+<!--                    <form method="post" th:action="@{/admin/verify-certificate}">-->
+<!--                        <input type="hidden" name="certificateId" th:value="${certificate.id}" />-->
+
+<!--                        <button type="submit" name="action" value="approve" class="btn btn-success me-2">Approve</button>-->
+<!--                        <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Verify Medals &ndash;&gt;-->
+<!--            <div id="verify-medals" class="form-section mt-4">-->
+<!--                <h4 class="mb-3">Verify Medals</h4>-->
+
+<!--                <div th:each="medal, iterStat : ${medals}" class="card mb-3 p-3">-->
+<!--                    <p><strong>Medal ID:</strong> <span th:text="${medal.id}"></span></p>-->
+
+<!--                    <p><strong>Medal Image:</strong></p>-->
+<!--                    <img th:src="${medalImages[iterStat.index]}"-->
+<!--                         alt="Medal Image"-->
+<!--                         class="img-fluid mb-2"-->
+<!--                         style="max-width: 300px;" />-->
+
+<!--                    <form method="post" th:action="@{/admin/verify-medal}">-->
+<!--                        <input type="hidden" name="medalId" th:value="${medal.id}" />-->
+
+<!--                        <button type="submit" name="action" value="approve" class="btn btn-success me-2">Approve</button>-->
+<!--                        <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--            </div>-->
+
+
+<!--            <a href="/admin/update-rankings" class="btn btn-primary">Update Rankings</a>-->
+
+
+
+
+<!--            <footer class="text-center mt-5">-->
+<!--                &copy; 2025 Sports Admin Portal. All rights reserved.-->
+<!--            </footer>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .sidebar {
+            background-color: #1e293b;
+            min-height: 100vh;
+            color: #ffffff;
+            position: sticky;
+            top: 0;
+        }
+
+        .sidebar a {
+            color: #d1d5db;
+            text-decoration: none;
+            display: block;
+            padding: 12px 20px;
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover {
+            background-color: #334155;
+            color: #ffffff;
+        }
+
+        .form-section {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+            scroll-margin-top: 80px;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar py-4">
+            <h4 class="text-center mb-4">Admin Panel</h4>
+            <a href="#state-form"><i class="fa-solid fa-map-pin me-2"></i>Add State</a>
+            <a href="#game-form"><i class="fa-solid fa-gamepad me-2"></i>Add Game</a>
+            <a href="#event-form"><i class="fa-solid fa-calendar-days me-2"></i>Add Event</a>
+            <a href="#verify-certificates"><i class="fa-solid fa-check-circle me-2"></i>Verify Certificates</a>
+            <a href="#verify-medals"><i class="fa-solid fa-medal me-2"></i>Verify Medals</a>
+            <a href="/admin/save-venue"><i class="fa-solid fa-location-dot me-2"></i>Add Venue</a>
+            <a href="/admin/save-training-center"><i class="fa-solid fa-dumbbell me-2"></i>Add Training Center</a>
+            <a href="/admin/gallery"><i class="fa-solid fa-image me-2"></i>Gallery</a>
+
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 py-4 px-5">
+            <h2 class="mb-4">Welcome, Admin</h2>
+
+            <!-- Success/Error Messages -->
+            <div th:if="${param.successState}" class="alert alert-success">State added successfully!</div>
+            <div th:if="${param.errorState}" class="alert alert-danger">Failed to add state.</div>
+            <div th:if="${param.successGame}" class="alert alert-success">Game added successfully!</div>
+            <div th:if="${param.errorGame}" class="alert alert-danger">Failed to add game.</div>
+            <div th:if="${param.successEvent}" class="alert alert-success">Event added successfully!</div>
+            <div th:if="${param.errorEvent}" class="alert alert-danger">Failed to add event.</div>
+
+            <!-- Add State Form -->
+            <div id="state-form" class="form-section">
+                <h4 class="mb-3">Add New State</h4>
+                <form th:action="@{/admin/add-state}" method="post" th:object="${state}">
+                    <div class="mb-3">
+                        <label for="stateName" class="form-label">State Name</label>
+                        <input type="text" th:field="*{name}" class="form-control" id="stateName" placeholder="Enter state name" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add State</button>
+                </form>
+            </div>
+
+            <!-- Add Game Form -->
+            <div id="game-form" class="form-section">
+                <h4 class="mb-3">Add New Game</h4>
+                <form th:action="@{/admin/add-game}" method="post" th:object="${game}">
+                    <div class="mb-3">
+                        <label for="gameName" class="form-label">Game Name</label>
+                        <input type="text" th:field="*{name}" class="form-control" id="gameName" placeholder="Enter game name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="gameLogo" class="form-label">Game Image URL</label>
+                        <input type="text" th:field="*{imageUrl}" class="form-control" id="gameLogo" placeholder="Enter image URL">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Game</button>
+                </form>
+            </div>
+
+            <!-- Add Event Form -->
+            <div id="event-form" class="form-section">
+                <h4 class="mb-3">Add New Event</h4>
+                <form method="post" th:action="@{/admin/add-event}" th:object="${event}" enctype="multipart/form-data">
+
+                <div class="mb-3">
+                        <label for="eventName" class="form-label">Event Name</label>
+                        <input type="text" th:field="*{name}" class="form-control" id="eventName" placeholder="Enter event name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="eventLocation" class="form-label">Location</label>
+                        <input type="text" th:field="*{location}" class="form-control" id="eventLocation" placeholder="Enter event location" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="selectGame" class="form-label">Select Game</label>
+                        <select th:field="*{game.id}" class="form-select" id="selectGame" required>
+                            <option selected disabled value="">Select a game</option>
+                            <option th:each="g : ${games}" th:value="${g.id}" th:text="${g.name}"></option>
+                        </select>
+                    </div>
+
+                    <!-- Select State -->
+                    <label for="stateSelect">Select State</label>
+                    <select id="stateSelect" name="stateId" class="form-select">
+                        <option value="">-- Select State --</option>
+                        <option th:each="state : ${states}" th:value="${state.id}" th:text="${state.name}"></option>
+                    </select>
+
+                    <!-- Select District -->
+                    <div id="districtContainer">
+                        <label for="districtSelect">Select District</label>
+                        <select id="districtSelect" name="districtId" class="form-select">
+                            <option value="">-- Select District --</option>
+                        </select>
+                    </div>
+
+                    <!-- Manual District Input (hidden by default) -->
+                    <div id="manualDistrictContainer" style="display:none;">
+                        <label for="manualDistrict">Enter District</label>
+                        <input type="text" id="manualDistrict" name="manualDistrict" placeholder="Enter district name" class="form-input" />
+                    </div>
+
+<script>
+
+                    document.getElementById('stateSelect').addEventListener('change', function () {
+                    const stateId = this.value;
+                    const districtSelect = document.getElementById('districtSelect');
+                    const manualDistrictContainer = document.getElementById('manualDistrictContainer');
+
+                    if (stateId) {
+                    fetch(`/districts/by-state/${stateId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                    districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+
+                    if (data.length > 0) {
+                    // Populate dropdown with districts
+                    data.forEach(d => {
+                    districtSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                    });
+
+                    districtSelect.style.display = 'block';
+                    manualDistrictContainer.style.display = 'none';
+                    } else {
+                    // No districts found -> Show manual input
+                    districtSelect.style.display = 'none';
+                    manualDistrictContainer.style.display = 'block';
+                    }
+                    })
+                    .catch(err => {
+                    console.error("Error fetching districts:", err);
+                    districtSelect.style.display = 'none';
+                    manualDistrictContainer.style.display = 'block';
+                    });
+                    } else {
+                    districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+                    districtSelect.style.display = 'block';
+                    manualDistrictContainer.style.display = 'none';
+                    }
+                    });
+
+
+</script>
+
+
+                    <div class="mb-3">
+                        <label for="eventDate" class="form-label">Event Date</label>
+                        <input type="date" th:field="*{date}" class="form-control" id="eventDate" required>
+                    </div>
+
+
+                    <!-- ✅ Add this: Image upload -->
+                    <div class="mb-3">
+                        <label for="eventImage" class="form-label">Event Image</label>
+                        <input type="file" name="image" class="form-control" id="eventImage" accept="image/*" required>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary">Add Event</button>
+                </form>
+            </div>
+
+
+
+
+            <!-- Verify Certificates -->
+            <div id="verify-certificates" class="form-section">
+                <h4 class="mb-3">Verify Certificates</h4>
+
+                <div th:each="certificate, iterStat : ${certificates}" class="card mb-3 p-3">
+                    <p><strong>Certificate ID:</strong> <span th:text="${certificate.id}"></span></p>
+                    <p><strong>Certificate Image:</strong></p>
+                    <img th:src="${certificateImages[iterStat.index]}" alt="Certificate Image"
+                         class="img-fluid mb-2" style="max-width: 300px;" />
+
+                    <form method="post" th:action="@{/admin/verify-certificate}">
+                        <input type="hidden" name="certificateId" th:value="${certificate.id}" />
+                        <button type="submit" name="action" value="approve" class="btn btn-success me-2">Approve</button>
+                        <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Verify Medals -->
+            <div id="verify-medals" class="form-section mt-4">
+                <h4 class="mb-3">Verify Medals</h4>
+
+                <div th:each="medal, iterStat : ${medals}" class="card mb-3 p-3">
+                    <p><strong>Medal ID:</strong> <span th:text="${medal.id}"></span></p>
+                    <p><strong>Medal Image:</strong></p>
+                    <img th:src="${medalImages[iterStat.index]}" alt="Medal Image"
+                         class="img-fluid mb-2" style="max-width: 300px;" />
+
+                    <form method="post" th:action="@{/admin/verify-medal}">
+                        <input type="hidden" name="medalId" th:value="${medal.id}" />
+                        <button type="submit" name="action" value="approve" class="btn btn-success me-2">Approve</button>
+                        <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+                    </form>
+                </div>
+            </div>
+
+            <a href="/admin/update-rankings" class="btn btn-primary mt-4">Update Rankings</a>
+
+            <footer class="text-center mt-5">
+                &copy; 2025 Sports Admin Portal. All rights reserved.
+            </footer>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--            <form method="post" th:action="@{/admin/add-venue}" th:object="${venue}" enctype="multipart/form-data">-->
+
+<!--                <div class="mb-3">-->
+<!--                    <label for="venueName" class="form-label">Venue Name</label>-->
+<!--                    <input type="text" th:field="*{name}" class="form-control" id="venueName" required>-->
+<!--                </div>-->
+
+<!--                <div class="mb-3">-->
+<!--                    <label for="venueLocation" class="form-label">Location</label>-->
+<!--                    <input type="text" th:field="*{location}" class="form-control" id="venueLocation" required>-->
+<!--                </div>-->
+
+
+<!--                &lt;!&ndash; State Dropdown &ndash;&gt;-->
+<!--                <div class="mb-3">-->
+<!--                    <label for="stateSelect" class="form-label">Select State</label>-->
+<!--                    <select id="stateSelect" th:field="*{state}" class="form-select" required>-->
+<!--                        <option selected disabled value="">Select a state</option>-->
+<!--                        <option th:each="s : ${states}" th:value="${s.id}" th:text="${s.name}"></option>-->
+<!--                    </select>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Game Multi-select &ndash;&gt;-->
+<!--                <style>-->
+<!--                    select.form-select option:checked {-->
+<!--                        background-color: #007bff; /* Bootstrap Primary Blue */-->
+<!--                        color: white;-->
+<!--                    }-->
+<!--                </style>-->
+
+<!--                <label>Select Games</label>-->
+<!--                <select multiple class="form-select" th:field="*{games}" required>-->
+<!--                    <option th:each="g : ${games}" th:value="${g.id}" th:text="${g.name}"></option>-->
+<!--                </select>-->
+
+
+
+
+
+
+<!--                <div class="mb-3">-->
+<!--                    <label for="price" class="form-label">Price</label>-->
+<!--                    <input type="number" step="0.01" th:field="*{price}" class="form-control" id="price" required>-->
+<!--                </div>-->
+
+<!--                <div class="mb-3">-->
+<!--                    <label for="description" class="form-label">Description</label>-->
+<!--                    <textarea th:field="*{description}" class="form-control" id="description" rows="3" placeholder="Add timing, slot details, etc. here..." required></textarea>-->
+<!--                </div>-->
+
+<!--                <div class="mb-3">-->
+<!--                    <label for="venueImage" class="form-label">Venue Image</label>-->
+<!--                    <input type="file" name="venueImage" class="form-control" id="venueImage" accept="image/*" required>-->
+<!--                </div>-->
+
+<!--                <button type="submit" class="btn btn-primary">Add Venue</button>-->
+<!--            </form>-->
+
+
+
+
+
+
+
+
+
+
+<!--            <form th:action="@{/admin/add-venue}" method="post" th:object="${venue}" enctype="multipart/form-data">-->
+<!--                &lt;!&ndash; Venue Name &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Venue Name:</label>-->
+<!--                    <input type="text" th:field="*{name}" required />-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Venue Location &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Location:</label>-->
+<!--                    <input type="text" th:field="*{location}" required />-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; State Dropdown &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Select State:</label>-->
+<!--                    <select id="stateDropdown" name="stateId" required>-->
+<!--                        <option value="" disabled selected>Select a state</option>-->
+<!--                        <option th:each="s : ${states}" th:value="${s.id}" th:text="${s.name}"></option>-->
+<!--                    </select>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; District Dropdown &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Select District:</label>-->
+<!--                    <select th:field="*{district.id}" id="districtDropdown">-->
+<!--                        <option value="" disabled selected>Select a district</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Manual District Input (Optional) &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Or Enter District Manually:</label>-->
+<!--                    <input type="text" name="manualDistrictName" placeholder="Enter new district" />-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Venue Description &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Description:</label>-->
+<!--                    <textarea th:field="*{description}" required></textarea>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Amenities &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Amenities (comma separated):</label>-->
+<!--                    <input type="text" th:field="*{amenities}" placeholder="e.g. Parking, Washroom, WiFi" />-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Venue Image &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <label>Upload Venue Image:</label>-->
+<!--                    <input type="file" name="venueImage" accept="image/*" />-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Game Details (Repeatable) &ndash;&gt;-->
+<!--                <div id="gameDetailsContainer">-->
+<!--                    <div th:each="detail, iterStat : *{gameDetailsList}" class="game-detail-block">-->
+<!--                        <h4>Game Detail <span th:text="${iterStat.index + 1}"></span></h4>-->
+
+<!--                        &lt;!&ndash; Game Dropdown &ndash;&gt;-->
+<!--                        <label>Game:</label>-->
+<!--                        <select th:field="*{gameDetailsList[__${iterStat.index}__].game.id}" required>-->
+<!--                            <option value="">Select a game</option>-->
+<!--                            <option th:each="g : ${games}" th:value="${g.id}" th:text="${g.name}"></option>-->
+<!--                        </select>-->
+
+<!--                        &lt;!&ndash; Start Time &ndash;&gt;-->
+<!--                        <label>Start Time:</label>-->
+<!--                        <input type="time" th:field="*{gameDetailsList[__${iterStat.index}__].startTime}" required />-->
+
+<!--                        &lt;!&ndash; End Time &ndash;&gt;-->
+<!--                        <label>End Time:</label>-->
+<!--                        <input type="time" th:field="*{gameDetailsList[__${iterStat.index}__].endTime}" required />-->
+
+<!--                        &lt;!&ndash; Slots Per Hour &ndash;&gt;-->
+<!--                        <label>Slots Per Hour:</label>-->
+<!--                        <input type="number" th:field="*{gameDetailsList[__${iterStat.index}__].slotsPerHour}" required />-->
+
+<!--                        &lt;!&ndash; Price Per Slot &ndash;&gt;-->
+<!--                        <label>Price Per Slot:</label>-->
+<!--                        <input type="number" th:field="*{gameDetailsList[__${iterStat.index}__].pricePerSlot}" required />-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Add More Game Info Button &ndash;&gt;-->
+<!--                <button type="button" onclick="addGameDetail()">+ Add More Game Info</button>-->
+
+<!--                &lt;!&ndash; Submit &ndash;&gt;-->
+<!--                <div>-->
+<!--                    <button type="submit">Save Venue</button>-->
+<!--                </div>-->
+<!--            </form>-->
+
+<!--            &lt;!&ndash; 🧠 JavaScript for cascading dropdown and dynamic game details &ndash;&gt;-->
+<!--            <script>-->
+<!--                // 🟡 Load districts by state-->
+<!--                document.getElementById('stateDropdown').addEventListener('change', function () {-->
+<!--                    const stateId = this.value;-->
+<!--                    fetch('/get-districts/' + stateId)-->
+<!--                        .then(res => res.json())-->
+<!--                        .then(data => {-->
+<!--                            const districtDropdown = document.getElementById('districtDropdown');-->
+<!--                            districtDropdown.innerHTML = '<option value="">&#45;&#45; Select District &#45;&#45;</option>';-->
+<!--                            data.forEach(d => {-->
+<!--                                const option = document.createElement('option');-->
+<!--                                option.value = d.id;-->
+<!--                                option.text = d.name;-->
+<!--                                districtDropdown.appendChild(option);-->
+<!--                            });-->
+<!--                        });-->
+<!--                });-->
+
+<!--                // 🔁 Add more VenueGameDetails-->
+<!--                function addGameDetail() {-->
+<!--                    const container = document.getElementById("gameDetailsContainer");-->
+<!--                    const index = container.children.length;-->
+
+<!--                    const block = document.createElement("div");-->
+<!--                    block.classList.add("game-detail-block");-->
+<!--                    block.innerHTML = `-->
+<!--            <h4>Game Detail ${index + 1}</h4>-->
+<!--            <label>Game:</label>-->
+<!--            <select name="gameDetailsList[${index}].game.id" required>-->
+<!--                <option value="">Select a game</option>-->
+<!--                &lt;!&ndash; Server will populate via backend &ndash;&gt;-->
+<!--                ${[...document.querySelectorAll("select[name*='game.id'] option")].map(o => o.outerHTML).join('')}-->
+<!--            </select>-->
+
+<!--            <label>Start Time:</label>-->
+<!--            <input type="time" name="gameDetailsList[${index}].startTime" required />-->
+
+<!--            <label>End Time:</label>-->
+<!--            <input type="time" name="gameDetailsList[${index}].endTime" required />-->
+
+<!--            <label>Slots Per Hour:</label>-->
+<!--            <input type="number" name="gameDetailsList[${index}].slotsPerHour" required />-->
+
+<!--            <label>Price Per Slot:</label>-->
+<!--            <input type="number" name="gameDetailsList[${index}].pricePerSlot" required />-->
+<!--        `;-->
+<!--                    container.appendChild(block);-->
+<!--                }-->
+<!--            </script>-->
+
+
+

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Profile</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;700&display=swap">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            color: #ffcc00;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .card span {
+            font-weight: bold;
+            font-size: 18px;
+            color: #ffefc3;
+        }
+
+        form {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        input[type="text"], input[type="file"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            background: #ffcc00;
+            color: black;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .gallery img {
+            height: 120px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            margin-top: 30px;
+            font-size: 1.4rem;
+            color: #ffd700;
+            border-bottom: 1px solid #ffd700;
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Your Sports Profile</h1>
+
+    <div class="profile-info">
+        <div class="card">
+            <h3>Username</h3>
+            <span th:text="${user.username}">User Name</span>
+        </div>
+        <div class="card">
+            <h3>Email</h3>
+            <span th:text="${user.email}">user@example.com</span>
+        </div>
+        <div class="card">
+            <h3>Selected Game</h3>
+            <span th:if="${profile.selectedGame != null}"
+                  th:text="${profile.selectedGame.name}">Game Name</span>
+            <span th:if="${profile.selectedGame == null}">No Game Selected</span>
+        </div>
+        <div class="card">
+            <h3>Rank Score</h3>
+            <span th:text="${profile.rankScore}">0</span>
+        </div>
+    </div>
+
+    <!-- Only show game selection if not yet selected -->
+    <div th:if="${profile.selectedGame == null}">
+        <form th:action="@{/user/select-game}" method="post">
+            <h2 class="section-title">Select Your Game</h2>
+            <select name="gameId" required>
+                <option value="">-- Choose a game --</option>
+                <option th:each="game : ${games}"
+                        th:value="${game.id}" th:text="${game.name}">Game</option>
+            </select>
+            <input type="submit" value="Select Game">
+        </form>
+    </div>
+
+    <div class="upload-section">
+        <form th:action="@{/user/upload-medal}" method="post" enctype="multipart/form-data">
+            <h2 class="section-title">Upload Medal</h2>
+            <input type="text" name="type" placeholder="Type (Gold, Silver, Bronze)" required>
+            <input type="text" name="level" placeholder="Level (State, National, International)" required>
+            <input type="file" name="image" required>
+            <input type="submit" value="Upload Medal">
+        </form>
+
+        <form th:action="@{/user/upload-certificate}" method="post" enctype="multipart/form-data">
+            <h2 class="section-title">Upload Certificate</h2>
+            <input type="file" name="image" required>
+            <input type="submit" value="Upload Certificate">
+        </form>
+    </div>
+
+    <div class="gallery-section">
+        <h2 class="section-title">Your Medals</h2>
+        <div class="gallery">
+            <img th:each="medal : ${medals}"
+                 th:src="@{/user/medal/{id}/image(id=${medal.id})}" alt="Medal"/>
+        </div>
+
+        <h2 class="section-title">Your Certificates</h2>
+        <div class="gallery">
+            <img th:each="cert : ${certificates}"
+                 th:src="@{/user/certificate/{id}/image(id=${cert.id})}" alt="Certificate"/>
+        </div>
+    </div>
+</div>
+</body>
+</html>

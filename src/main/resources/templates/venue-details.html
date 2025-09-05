@@ -1,0 +1,1381 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8" />-->
+<!--    <title th:text="${venue.name} + ' — Venue'">Venue Details</title>-->
+<!--    <meta name="viewport" content="width=device-width,initial-scale=1" />-->
+
+<!--    &lt;!&ndash; Bootstrap 5 &ndash;&gt;-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">-->
+
+<!--    &lt;!&ndash; Icons &ndash;&gt;-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">-->
+
+<!--    <style>-->
+<!--        :root{-->
+<!--            &#45;&#45;primary: #0d6efd;-->
+<!--            &#45;&#45;accent: #22c55e;-->
+<!--            &#45;&#45;muted: #6c757d;-->
+<!--            &#45;&#45;card-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);-->
+<!--        }-->
+<!--        body {-->
+<!--            background: #f4f6f8;-->
+<!--            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;-->
+<!--            color: #1f2937;-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--        }-->
+<!--        .container-xl { max-width: 1100px; }-->
+
+<!--        /* HERO */-->
+<!--        .hero { border-radius: 12px; overflow: hidden; position: relative; height: 420px; margin-top: 28px; }-->
+<!--        .hero img { width:100%; height:100%; object-fit:cover; filter:brightness(0.85); display:block; }-->
+<!--        .hero-overlay { position:absolute; bottom:24px; left:24px; color:#fff; z-index:2; }-->
+<!--        .hero-overlay h1{ margin:0; font-size:2.25rem; font-weight:700; text-shadow:0 4px 22px rgba(0,0,0,.45); }-->
+<!--        .hero-overlay .location { margin-top:8px; color:#e6eef9; font-size:.95rem; }-->
+
+<!--        /* layout */-->
+<!--        .content { display:grid; grid-template-columns:1fr 420px; gap:26px; margin-top:20px; align-items:start; }-->
+<!--        .card-plain { background:#fff; padding:20px; border-radius:12px; box-shadow:var(&#45;&#45;card-shadow); }-->
+<!--        .venue-desc { color:#374151; line-height:1.6; }-->
+<!--        .amenities-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; margin-top:12px; }-->
+<!--        .amenity { background:#fbfdff; border-radius:10px; padding:12px; display:flex; gap:10px; align-items:center; box-shadow:0 4px 14px rgba(16,24,40,.04); font-weight:600; color:#0f172a; }-->
+<!--        .amenity i{ color:var(&#45;&#45;primary); font-size:1.15rem; }-->
+
+<!--        /* sidebar */-->
+<!--        .sidebar { position:sticky; top:28px; align-self:start; }-->
+<!--        .selector-card { padding:18px; border-radius:12px; background:#fff; box-shadow:var(&#45;&#45;card-shadow); margin-bottom:16px; }-->
+<!--        .muted { color:var(&#45;&#45;muted); }-->
+
+<!--        /* calendar */-->
+<!--        .calendar {-->
+<!--            padding: 16px;-->
+<!--            border-radius: 10px;-->
+<!--            background: #fff;-->
+<!--            box-shadow: var(&#45;&#45;card-shadow);-->
+<!--        }-->
+<!--        .calendar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }-->
+<!--        .calendar-grid { display:grid; grid-template-columns: repeat(7, 1fr); gap:8px; }-->
+<!--        .dow { text-align:center; font-weight:700; color:#475569; font-size:0.9rem; }-->
+<!--        .day {-->
+<!--            min-height:78px;-->
+<!--            background:#f8fafc;-->
+<!--            border-radius:8px;-->
+<!--            padding:8px;-->
+<!--            position:relative;-->
+<!--            cursor:pointer;-->
+<!--            transition:transform .08s ease, box-shadow .08s ease;-->
+<!--            display:flex;-->
+<!--            flex-direction:column;-->
+<!--            justify-content:flex-start;-->
+<!--        }-->
+<!--        .day:hover { transform:translateY(-4px); box-shadow:0 10px 20px rgba(15,23,42,0.06); }-->
+<!--        .day .date-num { font-weight:700; color:#0f172a; }-->
+<!--        .day .meta { margin-top:auto; display:flex; align-items:center; gap:6px; font-size:0.85rem; }-->
+<!--        .tick { color: #0f9d58; font-weight:800; }-->
+<!--        .cross { color: #d9534f; font-weight:800; }-->
+<!--        .day.disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }-->
+<!--        .day.selected { outline: 3px solid rgba(13,110,253,0.18); }-->
+
+<!--        /* slot chips */-->
+<!--        .slot-chip { display:inline-block; margin:8px 6px 6px 0; padding:10px 12px; border-radius:8px; font-weight:600; cursor:pointer; transition: transform .12s ease; box-shadow: 0 6px 18px rgba(15,23,42,0.04); }-->
+<!--        .slot-available{ background: linear-gradient(90deg,#22c55e,#16a34a); color:white; }-->
+<!--        .slot-limited{ background: linear-gradient(90deg,#f59e0b,#f97316); color:white; }-->
+<!--        .slot-full{ background:#e6e7ea; color:#7b7f87; cursor:not-allowed; }-->
+
+<!--        .price-badge { font-weight:700; color:#0b1220; background:#fff; padding:6px 10px; border-radius:8px; box-shadow:0 6px 20px rgba(12,16,25,0.06); }-->
+
+<!--        @media(max-width:992px) {-->
+<!--            .content { grid-template-columns: 1fr; }-->
+<!--            .sidebar { position:static; }-->
+<!--            .hero { height: 300px; }-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container container-xl">-->
+
+<!--    &lt;!&ndash; HERO &ndash;&gt;-->
+<!--    <div class="hero" th:style="'background-image: url(' + ${venue.imagePath} + ')'">-->
+<!--        <img th:src="${venue.imagePath}" alt="venue image" style="opacity:0">-->
+<!--        <div class="hero-overlay">-->
+<!--            <h1 th:text="${venue.name}">Venue Name</h1>-->
+<!--            <div class="location">-->
+<!--                <i class="fa-solid fa-location-dot"></i>-->
+<!--                <span th:text="${venue.location}" style="margin-left:8px;">Venue Location</span>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; MAIN &ndash;&gt;-->
+<!--    <div class="content">-->
+
+<!--        &lt;!&ndash; LEFT: details &ndash;&gt;-->
+<!--        <div>-->
+<!--            <div class="card-plain">-->
+<!--                <h3 class="mb-2">About</h3>-->
+<!--                <p class="venue-desc" th:text="${venue.description}">Venue description...</p>-->
+
+<!--                <hr style="margin:18px 0; border-top:1px solid #eef2f7;">-->
+
+<!--                <h5>Amenities</h5>-->
+<!--                <div class="amenities-grid mt-3">-->
+<!--                    <div class="amenity" th:each="amen : ${venue.amenities}">-->
+<!--                        <i class="fa-solid fa-circle-check"></i>-->
+<!--                        <span th:text="${amen}">Amenity</span>-->
+<!--                    </div>-->
+<!--                    <div th:if="${#lists.isEmpty(venue.amenities)}" class="muted">No amenities listed.</div>-->
+<!--                </div>-->
+
+<!--                <hr style="margin:18px 0; border-top:1px solid #eef2f7;">-->
+
+<!--                <h5>Unavailable Dates</h5>-->
+<!--                <p class="muted">Days when the venue is closed.</p>-->
+<!--                <div th:if="${#lists.isEmpty(venue.unavailableDates)}">-->
+<!--                    <small class="muted">No unavailable dates</small>-->
+<!--                </div>-->
+<!--                <ul class="mt-2" th:if="${!#lists.isEmpty(venue.unavailableDates)}">-->
+<!--                    <li th:each="d: ${venue.unavailableDates}" th:text="${d}">2025-08-01</li>-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; RIGHT: booking sidebar &ndash;&gt;-->
+<!--        <aside class="sidebar">-->
+
+<!--            &lt;!&ndash; Game selector card &ndash;&gt;-->
+<!--            <div class="selector-card">-->
+<!--                <label class="form-label fw-bold">Choose a Game</label>-->
+<!--                <select id="gameSelect" class="form-select" aria-label="Select game">-->
+<!--                    <option value="">— Select a game —</option>-->
+<!--                    <option th:each="gd : ${venue.gameDetailsList}"-->
+<!--                            th:value="${gd.id}"-->
+<!--                            th:data-start="${gd.startTime}"-->
+<!--                            th:data-end="${gd.endTime}"-->
+<!--                            th:data-slots="${gd.slotsPerHour}"-->
+<!--                            th:data-price="${gd.pricePerSlot}"-->
+<!--                            th:text="${gd.game.name}">-->
+<!--                    </option>-->
+<!--                </select>-->
+
+<!--                <div id="gameMeta" class="d-flex justify-content-between align-items-center mt-3" style="display:none;">-->
+<!--                    <div>-->
+<!--                        <div class="muted">Time</div>-->
+<!--                        <div id="gameTime" class="fw-semibold">08:00 - 18:00</div>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <div class="muted">Slots/hr</div>-->
+<!--                        <div id="gameSlots" class="fw-semibold">5</div>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <div class="muted">Price</div>-->
+<!--                        <div id="gamePrice" class="price-badge">₹150</div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Calendar card &ndash;&gt;-->
+<!--            <div class="selector-card calendar">-->
+<!--                <div class="calendar-header">-->
+<!--                    <div>-->
+<!--                        <strong id="calendarTitle">August 2025</strong>-->
+<!--                        <div class="muted small">Green = available • Red = full</div>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <button id="prevMonth" class="btn btn-sm btn-light me-1"><i class="fa fa-chevron-left"></i></button>-->
+<!--                        <button id="nextMonth" class="btn btn-sm btn-light"><i class="fa fa-chevron-right"></i></button>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <div class="calendar-grid">-->
+<!--                    <div class="dow">Mon</div><div class="dow">Tue</div><div class="dow">Wed</div>-->
+<!--                    <div class="dow">Thu</div><div class="dow">Fri</div><div class="dow">Sat</div><div class="dow">Sun</div>-->
+<!--                </div>-->
+
+<!--                <div id="calendarGrid" class="calendar-grid" style="margin-top:8px;"></div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Slots card &ndash;&gt;-->
+<!--            <div class="selector-card mt-3">-->
+<!--                <div class="d-flex justify-content-between align-items-center">-->
+<!--                    <h6 class="mb-0">Available Slots</h6>-->
+<!--                    <small id="selectedDateText" class="muted">—</small>-->
+<!--                </div>-->
+
+<!--                <div id="slotsWrap" class="mt-3">-->
+<!--                    <div id="noSelection" class="muted">Choose a game and a green date to view slots.</div>-->
+<!--                    <div id="slotsContainer" style="display:none;"></div>-->
+<!--                </div>-->
+
+<!--                <div class="d-grid mt-3">-->
+<!--                    <button id="bookNowBtn" class="btn btn-primary" disabled>Book Selected Slot</button>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--        </aside>-->
+<!--    </div>-->
+<!--</div>-->
+<!--</body>v-->
+<!--</html>-->
+
+<!--&lt;!&ndash; JS libs &ndash;&gt;-->
+<!--&lt;!&ndash;<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>&ndash;&gt;-->
+
+<!--&lt;!&ndash; Thymeleaf injects venue id so JS can call APIs &ndash;&gt;-->
+<!--&lt;!&ndash;<script th:inline="javascript">&ndash;&gt;-->
+<!--&lt;!&ndash;    /*<![CDATA[*/&ndash;&gt;-->
+<!--&lt;!&ndash;    const VENUE_ID = [[${venue.id}]];&ndash;&gt;-->
+<!--&lt;!&ndash;    /*]]>*/&ndash;&gt;-->
+<!--&lt;!&ndash;</script>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<script>&ndash;&gt;-->
+<!--&lt;!&ndash;    /*&ndash;&gt;-->
+<!--&lt;!&ndash;      Behavior:&ndash;&gt;-->
+<!--&lt;!&ndash;      - When a game is selected, calendar becomes active.&ndash;&gt;-->
+<!--&lt;!&ndash;      - Calendar loads month availability from backend:&ndash;&gt;-->
+<!--&lt;!&ndash;        GET /api/venues/{venueId}/games/{gameDetailId}/availability-month?year=YYYY&month=MM&ndash;&gt;-->
+<!--&lt;!&ndash;        This returns a map: { "2025-08-01": { availableCount: 3, totalSlots: 5 }, "2025-08-02": { availableCount: 0, totalSlots: 5 }, ... }&ndash;&gt;-->
+<!--&lt;!&ndash;      - Days with availableCount>0 show green tick. Else red cross or disabled.&ndash;&gt;-->
+<!--&lt;!&ndash;      - Clicking a green date triggers GET /api/venues/{venueId}/games/{gameDetailId}/availability?date=YYYY-MM-DD&ndash;&gt;-->
+<!--&lt;!&ndash;        which returns an array of slot objects: [{time:"08:00", availableCount:2, totalSlots:5, price:150}, ...]&ndash;&gt;-->
+<!--&lt;!&ndash;      - User selects a slot chip and clicks Book -> POST /api/bookings&ndash;&gt;-->
+<!--&lt;!&ndash;    */&ndash;&gt;-->
+
+<!--&lt;!&ndash;    const gameSelect = document.getElementById('gameSelect');&ndash;&gt;-->
+<!--&lt;!&ndash;    const gameMeta = document.getElementById('gameMeta');&ndash;&gt;-->
+<!--&lt;!&ndash;    const gameTime = document.getElementById('gameTime');&ndash;&gt;-->
+<!--&lt;!&ndash;    const gameSlots = document.getElementById('gameSlots');&ndash;&gt;-->
+<!--&lt;!&ndash;    const gamePrice = document.getElementById('gamePrice');&ndash;&gt;-->
+
+<!--&lt;!&ndash;    const calendarTitle = document.getElementById('calendarTitle');&ndash;&gt;-->
+<!--&lt;!&ndash;    const prevMonthBtn = document.getElementById('prevMonth');&ndash;&gt;-->
+<!--&lt;!&ndash;    const nextMonthBtn = document.getElementById('nextMonth');&ndash;&gt;-->
+<!--&lt;!&ndash;    const calendarGrid = document.getElementById('calendarGrid');&ndash;&gt;-->
+
+<!--&lt;!&ndash;    const selectedDateText = document.getElementById('selectedDateText');&ndash;&gt;-->
+<!--&lt;!&ndash;    const noSelection = document.getElementById('noSelection');&ndash;&gt;-->
+<!--&lt;!&ndash;    const slotsContainer = document.getElementById('slotsContainer');&ndash;&gt;-->
+<!--&lt;!&ndash;    const slotsWrap = document.getElementById('slotsWrap');&ndash;&gt;-->
+<!--&lt;!&ndash;    const bookNowBtn = document.getElementById('bookNowBtn');&ndash;&gt;-->
+
+<!--&lt;!&ndash;    let selectedGameDetailId = null;&ndash;&gt;-->
+<!--&lt;!&ndash;    let selectedDate = null;&ndash;&gt;-->
+<!--&lt;!&ndash;    let selectedSlot = null;&ndash;&gt;-->
+<!--&lt;!&ndash;    let currentPrice = null;&ndash;&gt;-->
+<!--&lt;!&ndash;    let currentMonth = new Date(); // will be set to first day of month&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // helpers&ndash;&gt;-->
+<!--&lt;!&ndash;    function firstDayOfMonth(date) { return new Date(date.getFullYear(), date.getMonth(), 1); }&ndash;&gt;-->
+<!--&lt;!&ndash;    function daysInMonth(date) { return new Date(date.getFullYear(), date.getMonth()+1, 0).getDate(); }&ndash;&gt;-->
+<!--&lt;!&ndash;    function pad(n){ return n<10?'0'+n:n; }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // initialize currentMonth to first day&ndash;&gt;-->
+<!--&lt;!&ndash;    currentMonth = firstDayOfMonth(currentMonth);&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // on game change -> show meta and load calendar availability for currentMonth&ndash;&gt;-->
+<!--&lt;!&ndash;    gameSelect.addEventListener('change', async function() {&ndash;&gt;-->
+<!--&lt;!&ndash;        selectedGameDetailId = this.value || null;&ndash;&gt;-->
+<!--&lt;!&ndash;        selectedSlot = null;&ndash;&gt;-->
+<!--&lt;!&ndash;        bookNowBtn.disabled = true;&ndash;&gt;-->
+
+<!--&lt;!&ndash;        if (!selectedGameDetailId) {&ndash;&gt;-->
+<!--&lt;!&ndash;            gameMeta.style.display = 'none';&ndash;&gt;-->
+<!--&lt;!&ndash;            calendarGrid.innerHTML = '';&ndash;&gt;-->
+<!--&lt;!&ndash;            slotsContainer.style.display = 'none';&ndash;&gt;-->
+<!--&lt;!&ndash;            noSelection.style.display = 'block';&ndash;&gt;-->
+<!--&lt;!&ndash;            selectedDateText.innerText = '—';&ndash;&gt;-->
+<!--&lt;!&ndash;            return;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        const option = this.options[this.selectedIndex];&ndash;&gt;-->
+<!--&lt;!&ndash;        const start = option.getAttribute('data-start') || '08:00';&ndash;&gt;-->
+<!--&lt;!&ndash;        const end = option.getAttribute('data-end') || '18:00';&ndash;&gt;-->
+<!--&lt;!&ndash;        const slotsPerHour = option.getAttribute('data-slots') || '1';&ndash;&gt;-->
+<!--&lt;!&ndash;        const price = option.getAttribute('data-price') || '0';&ndash;&gt;-->
+
+<!--&lt;!&ndash;        gameTime.textContent = start + ' - ' + end;&ndash;&gt;-->
+<!--&lt;!&ndash;        gameSlots.textContent = slotsPerHour;&ndash;&gt;-->
+<!--&lt;!&ndash;        gamePrice.textContent = '₹' + price;&ndash;&gt;-->
+<!--&lt;!&ndash;        currentPrice = price;&ndash;&gt;-->
+
+<!--&lt;!&ndash;        gameMeta.style.display = 'flex';&ndash;&gt;-->
+<!--&lt;!&ndash;        selectedDateText.innerText = '—';&ndash;&gt;-->
+<!--&lt;!&ndash;        selectedDate = null;&ndash;&gt;-->
+<!--&lt;!&ndash;        selectedSlot = null;&ndash;&gt;-->
+<!--&lt;!&ndash;        slotsContainer.style.display = 'none';&ndash;&gt;-->
+<!--&lt;!&ndash;        noSelection.style.display = 'block';&ndash;&gt;-->
+<!--&lt;!&ndash;        await loadMonthAvailability(currentMonth);&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // prev/next month&ndash;&gt;-->
+<!--&lt;!&ndash;    prevMonthBtn.addEventListener('click', () => {&ndash;&gt;-->
+<!--&lt;!&ndash;        currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth()-1, 1);&ndash;&gt;-->
+<!--&lt;!&ndash;        if (!selectedGameDetailId) return;&ndash;&gt;-->
+<!--&lt;!&ndash;        loadMonthAvailability(currentMonth);&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+<!--&lt;!&ndash;    nextMonthBtn.addEventListener('click', () => {&ndash;&gt;-->
+<!--&lt;!&ndash;        currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth()+1, 1);&ndash;&gt;-->
+<!--&lt;!&ndash;        if (!selectedGameDetailId) return;&ndash;&gt;-->
+<!--&lt;!&ndash;        loadMonthAvailability(currentMonth);&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // load availability for month from backend&ndash;&gt;-->
+<!--&lt;!&ndash;    async function loadMonthAvailability(monthDate) {&ndash;&gt;-->
+<!--&lt;!&ndash;        // monthDate is first day of month&ndash;&gt;-->
+<!--&lt;!&ndash;        const year = monthDate.getFullYear();&ndash;&gt;-->
+<!--&lt;!&ndash;        const month = monthDate.getMonth() + 1; // 1-12&ndash;&gt;-->
+<!--&lt;!&ndash;        calendarTitle.textContent = monthDate.toLocaleString(undefined, { month: 'long', year: 'numeric' });&ndash;&gt;-->
+
+<!--&lt;!&ndash;        calendarGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:12px;color:var(&#45;&#45;muted);">Loading availability...</div>`;&ndash;&gt;-->
+
+<!--&lt;!&ndash;        try {&ndash;&gt;-->
+<!--&lt;!&ndash;            const resp = await fetch(`/api/venues/${VENUE_ID}/games/${selectedGameDetailId}/availability-month?year=${year}&month=${month}`);&ndash;&gt;-->
+<!--&lt;!&ndash;            if (!resp.ok) throw new Error('Failed loading month availability');&ndash;&gt;-->
+<!--&lt;!&ndash;            const availability = await resp.json(); // map of date-> {availableCount, totalSlots}&ndash;&gt;-->
+
+<!--&lt;!&ndash;            renderMonthGrid(monthDate, availability);&ndash;&gt;-->
+<!--&lt;!&ndash;        } catch (err) {&ndash;&gt;-->
+<!--&lt;!&ndash;            console.error(err);&ndash;&gt;-->
+<!--&lt;!&ndash;            calendarGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:12px;color:red;">Unable to load calendar</div>`;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // render month grid: note week starts Monday&ndash;&gt;-->
+<!--&lt;!&ndash;    function renderMonthGrid(firstOfMonth, availabilityMap) {&ndash;&gt;-->
+<!--&lt;!&ndash;        calendarGrid.innerHTML = ''; // clear&ndash;&gt;-->
+
+<!--&lt;!&ndash;        const year = firstOfMonth.getFullYear();&ndash;&gt;-->
+<!--&lt;!&ndash;        const month = firstOfMonth.getMonth(); // 0-11&ndash;&gt;-->
+<!--&lt;!&ndash;        const days = daysInMonth(firstOfMonth);&ndash;&gt;-->
+
+<!--&lt;!&ndash;        // find day-of-week for first day (0=Sun,1=Mon...); we want Monday=1 -> shift&ndash;&gt;-->
+<!--&lt;!&ndash;        const firstDow = new Date(year, month, 1).getDay(); // 0..6&ndash;&gt;-->
+<!--&lt;!&ndash;        // convert so Monday=1..Sunday=7&ndash;&gt;-->
+<!--&lt;!&ndash;        const startOffset = firstDow === 0 ? 6 : firstDow - 1;&ndash;&gt;-->
+
+<!--&lt;!&ndash;        // fill leading empty cells&ndash;&gt;-->
+<!--&lt;!&ndash;        for (let i=0;i<startOffset;i++){&ndash;&gt;-->
+<!--&lt;!&ndash;            const empty = document.createElement('div');&ndash;&gt;-->
+<!--&lt;!&ndash;            empty.className = 'day disabled';&ndash;&gt;-->
+<!--&lt;!&ndash;            empty.innerHTML = '';&ndash;&gt;-->
+<!--&lt;!&ndash;            calendarGrid.appendChild(empty);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        // add days&ndash;&gt;-->
+<!--&lt;!&ndash;        for (let d=1; d<=days; d++){&ndash;&gt;-->
+<!--&lt;!&ndash;            const dateStr = `${year}-${pad(month+1)}-${pad(d)}`;&ndash;&gt;-->
+<!--&lt;!&ndash;            const data = availabilityMap[dateStr];&ndash;&gt;-->
+
+<!--&lt;!&ndash;            const dayEl = document.createElement('div');&ndash;&gt;-->
+<!--&lt;!&ndash;            dayEl.className = 'day';&ndash;&gt;-->
+<!--&lt;!&ndash;            const dateNum = document.createElement('div');&ndash;&gt;-->
+<!--&lt;!&ndash;            dateNum.className = 'date-num';&ndash;&gt;-->
+<!--&lt;!&ndash;            dateNum.textContent = d;&ndash;&gt;-->
+<!--&lt;!&ndash;            dayEl.appendChild(dateNum);&ndash;&gt;-->
+
+<!--&lt;!&ndash;            const meta = document.createElement('div');&ndash;&gt;-->
+<!--&lt;!&ndash;            meta.className = 'meta';&ndash;&gt;-->
+
+<!--&lt;!&ndash;            if (data && data.availableCount > 0) {&ndash;&gt;-->
+<!--&lt;!&ndash;                // available&ndash;&gt;-->
+<!--&lt;!&ndash;                const tick = document.createElement('span');&ndash;&gt;-->
+<!--&lt;!&ndash;                tick.className = 'tick';&ndash;&gt;-->
+<!--&lt;!&ndash;                tick.textContent = 'Available ' + '(' + data.availableCount + ')';&ndash;&gt;-->
+<!--&lt;!&ndash;                meta.appendChild(tick);&ndash;&gt;-->
+
+<!--&lt;!&ndash;                dayEl.addEventListener('click', () => onPickDate(dateStr, data));&ndash;&gt;-->
+<!--&lt;!&ndash;            } else if (data) {&ndash;&gt;-->
+<!--&lt;!&ndash;                // fully booked&ndash;&gt;-->
+<!--&lt;!&ndash;                const cross = document.createElement('span');&ndash;&gt;-->
+<!--&lt;!&ndash;                cross.className = 'cross';&ndash;&gt;-->
+<!--&lt;!&ndash;                cross.textContent = 'Full';&ndash;&gt;-->
+<!--&lt;!&ndash;                meta.appendChild(cross);&ndash;&gt;-->
+<!--&lt;!&ndash;                dayEl.classList.add('disabled');&ndash;&gt;-->
+<!--&lt;!&ndash;            } else {&ndash;&gt;-->
+<!--&lt;!&ndash;                // no data => treat as full/disabled (or you could show as available depending on your design)&ndash;&gt;-->
+<!--&lt;!&ndash;                const cross = document.createElement('span');&ndash;&gt;-->
+<!--&lt;!&ndash;                cross.className = 'cross';&ndash;&gt;-->
+<!--&lt;!&ndash;                cross.textContent = 'Full';&ndash;&gt;-->
+<!--&lt;!&ndash;                meta.appendChild(cross);&ndash;&gt;-->
+<!--&lt;!&ndash;                dayEl.classList.add('disabled');&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+
+<!--&lt;!&ndash;            dayEl.appendChild(meta);&ndash;&gt;-->
+<!--&lt;!&ndash;            calendarGrid.appendChild(dayEl);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;        // trailing empty cells to complete last week (optional)&ndash;&gt;-->
+<!--&lt;!&ndash;        const totalCells = startOffset + days;&ndash;&gt;-->
+<!--&lt;!&ndash;        const trailing = (7 - (totalCells % 7)) % 7;&ndash;&gt;-->
+<!--&lt;!&ndash;        for (let i=0;i<trailing;i++){&ndash;&gt;-->
+<!--&lt;!&ndash;            const empty = document.createElement('div');&ndash;&gt;-->
+<!--&lt;!&ndash;            empty.className = 'day disabled';&ndash;&gt;-->
+<!--&lt;!&ndash;            calendarGrid.appendChild(empty);&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // when user clicks a green date&ndash;&gt;-->
+<!--&lt;!&ndash;    async function onPickDate(dateStr, data) {&ndash;&gt;-->
+<!--&lt;!&ndash;        // highlight selected day element&ndash;&gt;-->
+<!--&lt;!&ndash;        document.querySelectorAll('.day').forEach(e => e.classList.remove('selected'));&ndash;&gt;-->
+<!--&lt;!&ndash;        // find day element with matching date number and availability&ndash;&gt;-->
+<!--&lt;!&ndash;        const dayEls = [...document.querySelectorAll('.day')];&ndash;&gt;-->
+<!--&lt;!&ndash;        const dayNum = parseInt(dateStr.split('-')[2],10);&ndash;&gt;-->
+<!--&lt;!&ndash;        const dayEl = dayEls.find(el => el.querySelector('.date-num') && Number(el.querySelector('.date-num').textContent) === dayNum && !el.classList.contains('disabled'));&ndash;&gt;-->
+<!--&lt;!&ndash;        if (dayEl) dayEl.classList.add('selected');&ndash;&gt;-->
+
+<!--&lt;!&ndash;        selectedDate = dateStr;&ndash;&gt;-->
+<!--&lt;!&ndash;        selectedDateText.textContent = dateStr;&ndash;&gt;-->
+<!--&lt;!&ndash;        selectedSlot = null;&ndash;&gt;-->
+<!--&lt;!&ndash;        bookNowBtn.disabled = true;&ndash;&gt;-->
+
+<!--&lt;!&ndash;        // fetch hour-level slots&ndash;&gt;-->
+<!--&lt;!&ndash;        try {&ndash;&gt;-->
+<!--&lt;!&ndash;            noSelection.style.display = 'none';&ndash;&gt;-->
+<!--&lt;!&ndash;            slotsContainer.style.display = 'none';&ndash;&gt;-->
+<!--&lt;!&ndash;            slotsContainer.innerHTML = '';&ndash;&gt;-->
+<!--&lt;!&ndash;            slotsContainer.style.display = 'block';&ndash;&gt;-->
+
+<!--&lt;!&ndash;            const resp = await fetch(`/api/venues/${VENUE_ID}/games/${selectedGameDetailId}/availability?date=${dateStr}`);&ndash;&gt;-->
+<!--&lt;!&ndash;            if (!resp.ok) throw new Error('Failed to fetch slots');&ndash;&gt;-->
+
+<!--&lt;!&ndash;            const slots = await resp.json(); // array of {time, availableCount, totalSlots, price}&ndash;&gt;-->
+
+<!--&lt;!&ndash;            renderSlots(slots);&ndash;&gt;-->
+<!--&lt;!&ndash;        } catch (err) {&ndash;&gt;-->
+<!--&lt;!&ndash;            console.error(err);&ndash;&gt;-->
+<!--&lt;!&ndash;            slotsContainer.innerHTML = '<div class="muted">Unable to load slots.</div>';&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    function renderSlots(slots) {&ndash;&gt;-->
+<!--&lt;!&ndash;        // clear and render chips&ndash;&gt;-->
+<!--&lt;!&ndash;        slotsContainer.innerHTML = '';&ndash;&gt;-->
+<!--&lt;!&ndash;        if (!slots || slots.length === 0) {&ndash;&gt;-->
+<!--&lt;!&ndash;            slotsContainer.innerHTML = '<div class="muted">No slots available.</div>';&ndash;&gt;-->
+<!--&lt;!&ndash;            return;&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;        slots.forEach(s => {&ndash;&gt;-->
+<!--&lt;!&ndash;            const chip = document.createElement('div');&ndash;&gt;-->
+<!--&lt;!&ndash;            chip.className = 'slot-chip';&ndash;&gt;-->
+<!--&lt;!&ndash;            const label = document.createElement('div');&ndash;&gt;-->
+<!--&lt;!&ndash;            label.textContent = s.time;&ndash;&gt;-->
+<!--&lt;!&ndash;            const price = document.createElement('div');&ndash;&gt;-->
+<!--&lt;!&ndash;            price.style.fontSize = '0.9rem';&ndash;&gt;-->
+<!--&lt;!&ndash;            price.style.marginTop = '6px';&ndash;&gt;-->
+<!--&lt;!&ndash;            price.textContent = '₹' + s.price;&ndash;&gt;-->
+
+<!--&lt;!&ndash;            if (s.availableCount > 0) {&ndash;&gt;-->
+<!--&lt;!&ndash;                chip.classList.add('slot-available');&ndash;&gt;-->
+<!--&lt;!&ndash;                chip.addEventListener('click', () => {&ndash;&gt;-->
+<!--&lt;!&ndash;                    // unselect others&ndash;&gt;-->
+<!--&lt;!&ndash;                    document.querySelectorAll('.slot-chip').forEach(c => c.style.boxShadow = '0 6px 18px rgba(15,23,42,0.04)');&ndash;&gt;-->
+<!--&lt;!&ndash;                    chip.style.boxShadow = '0 12px 28px rgba(15,23,42,0.12)';&ndash;&gt;-->
+<!--&lt;!&ndash;                    selectedSlot = s;&ndash;&gt;-->
+<!--&lt;!&ndash;                    bookNowBtn.disabled = false;&ndash;&gt;-->
+<!--&lt;!&ndash;                });&ndash;&gt;-->
+<!--&lt;!&ndash;            } else {&ndash;&gt;-->
+<!--&lt;!&ndash;                chip.classList.add('slot-full');&ndash;&gt;-->
+<!--&lt;!&ndash;                chip.setAttribute('title','Fully booked');&ndash;&gt;-->
+<!--&lt;!&ndash;                chip.style.opacity = '0.8';&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+
+<!--&lt;!&ndash;            chip.appendChild(label);&ndash;&gt;-->
+<!--&lt;!&ndash;            chip.appendChild(price);&ndash;&gt;-->
+<!--&lt;!&ndash;            slotsContainer.appendChild(chip);&ndash;&gt;-->
+<!--&lt;!&ndash;        });&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // booking action&ndash;&gt;-->
+<!--&lt;!&ndash;    bookNowBtn.addEventListener('click', async () => {&ndash;&gt;-->
+<!--&lt;!&ndash;        if (!selectedSlot || !selectedDate || !selectedGameDetailId) return;&ndash;&gt;-->
+<!--&lt;!&ndash;        bookNowBtn.disabled = true;&ndash;&gt;-->
+<!--&lt;!&ndash;        bookNowBtn.textContent = 'Booking...';&ndash;&gt;-->
+
+<!--&lt;!&ndash;        const payload = {&ndash;&gt;-->
+<!--&lt;!&ndash;            gameDetailId: selectedGameDetailId,&ndash;&gt;-->
+<!--&lt;!&ndash;            venueId: VENUE_ID,&ndash;&gt;-->
+<!--&lt;!&ndash;            date: selectedDate,&ndash;&gt;-->
+<!--&lt;!&ndash;            time: selectedSlot.time&ndash;&gt;-->
+<!--&lt;!&ndash;        };&ndash;&gt;-->
+
+<!--&lt;!&ndash;        try {&ndash;&gt;-->
+<!--&lt;!&ndash;            const resp = await fetch('/api/bookings', {&ndash;&gt;-->
+<!--&lt;!&ndash;                method: 'POST',&ndash;&gt;-->
+<!--&lt;!&ndash;                headers: {'Content-Type':'application/json'},&ndash;&gt;-->
+<!--&lt;!&ndash;                body: JSON.stringify(payload)&ndash;&gt;-->
+<!--&lt;!&ndash;            });&ndash;&gt;-->
+<!--&lt;!&ndash;            if (!resp.ok) {&ndash;&gt;-->
+<!--&lt;!&ndash;                const text = await resp.text();&ndash;&gt;-->
+<!--&lt;!&ndash;                alert('Booking failed: ' + text);&ndash;&gt;-->
+<!--&lt;!&ndash;                bookNowBtn.disabled = false;&ndash;&gt;-->
+<!--&lt;!&ndash;                bookNowBtn.textContent = 'Book Selected Slot';&ndash;&gt;-->
+<!--&lt;!&ndash;                return;&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+<!--&lt;!&ndash;            alert('Booking confirmed!');&ndash;&gt;-->
+<!--&lt;!&ndash;            // refresh month and day availability&ndash;&gt;-->
+<!--&lt;!&ndash;            await loadMonthAvailability(currentMonth);&ndash;&gt;-->
+<!--&lt;!&ndash;            // re-fetch slots for the selected date to refresh chip states&ndash;&gt;-->
+<!--&lt;!&ndash;            await onPickDate(selectedDate);&ndash;&gt;-->
+<!--&lt;!&ndash;            bookNowBtn.textContent = 'Booked';&ndash;&gt;-->
+<!--&lt;!&ndash;        } catch (err) {&ndash;&gt;-->
+<!--&lt;!&ndash;            console.error(err);&ndash;&gt;-->
+<!--&lt;!&ndash;            alert('Booking failed. Try again.');&ndash;&gt;-->
+<!--&lt;!&ndash;            bookNowBtn.disabled = false;&ndash;&gt;-->
+<!--&lt;!&ndash;            bookNowBtn.textContent = 'Book Selected Slot';&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+<!--&lt;!&ndash;</script>&ndash;&gt;-->
+<!--&lt;!&ndash;</body>&ndash;&gt;-->
+<!--&lt;!&ndash;</html>&ndash;&gt;-->
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title th:text="${venue.name}">Venue Details</title>-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">-->
+<!--    <style>-->
+<!--        body { font-family: Arial, sans-serif; margin:0; background:#f5f6f8; }-->
+<!--        .container-xl { max-width: 1200px; margin: auto; padding: 15px; }-->
+<!--        .hero { position: relative; height: 300px; background-size: cover; background-position: center; }-->
+<!--        .hero-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); color: white; padding: 20px; display:flex; flex-direction:column; justify-content:flex-end; }-->
+<!--        .location { display: flex; align-items: center; margin-top: 8px; }-->
+<!--        .content { display: flex; gap: 20px; margin-top: 20px; }-->
+<!--        .card-plain, .selector-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }-->
+<!--        .amenities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }-->
+<!--        aside.sidebar { width: 350px; }-->
+<!--        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align:center; }-->
+<!--        .dow { font-weight: bold; padding: 5px; }-->
+<!--        .date-cell { padding: 8px; border-radius: 4px; cursor: pointer; }-->
+<!--        .date-cell.available { background: #d4f8d4; }-->
+<!--        .date-cell.full { background: #f8d4d4; }-->
+<!--        .date-cell.selected { border: 2px solid #007bff; }-->
+<!--        .slot-item { display: flex; justify-content: space-between; padding: 6px 8px; margin-bottom: 5px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }-->
+<!--        .slot-item.available:hover { background: #e9f7ef; }-->
+<!--        .slot-item.selected { background: #007bff; color: white; }-->
+<!--        .slot-item.full { background: #f8d7da; color: #721c24; cursor: not-allowed; }-->
+<!--        .price-badge { background: #007bff; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body data-venue-id="${venue.id}">-->
+
+<!--<div class="container container-xl">-->
+
+<!--    &lt;!&ndash; HERO &ndash;&gt;-->
+<!--    <div class="hero" th:style="'background-image: url(' + ${venue.imagePath} + ')'">-->
+<!--        <img th:src="${venue.imagePath}" alt="venue image" style="opacity:0">-->
+<!--        <div class="hero-overlay">-->
+<!--            <h1 th:text="${venue.name}">Venue Name</h1>-->
+<!--            <div class="location">-->
+<!--                <i class="fa-solid fa-location-dot"></i>-->
+<!--                <span th:text="${venue.location}" style="margin-left:8px;">Venue Location</span>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; MAIN &ndash;&gt;-->
+<!--    <div class="content">-->
+
+<!--        &lt;!&ndash; LEFT: details &ndash;&gt;-->
+<!--        <div style="flex:1;">-->
+<!--            <div class="card-plain">-->
+<!--                <h3 class="mb-2">About</h3>-->
+<!--                <p class="venue-desc" th:text="${venue.description}">Venue description...</p>-->
+
+<!--                <hr style="margin:18px 0; border-top:1px solid #eef2f7;">-->
+
+<!--                <h5>Amenities</h5>-->
+<!--                <div class="amenities-grid mt-3">-->
+<!--                    <div class="amenity" th:each="amen : ${venue.amenities}">-->
+<!--                        <i class="fa-solid fa-circle-check"></i>-->
+<!--                        <span th:text="${amen}">Amenity</span>-->
+<!--                    </div>-->
+<!--                    <div th:if="${#lists.isEmpty(venue.amenities)}" class="muted">No amenities listed.</div>-->
+<!--                </div>-->
+
+<!--                <hr style="margin:18px 0; border-top:1px solid #eef2f7;">-->
+
+<!--                <h5>Unavailable Dates</h5>-->
+<!--                <p class="muted">Days when the venue is closed.</p>-->
+<!--                <div th:if="${#lists.isEmpty(venue.unavailableDates)}">-->
+<!--                    <small class="muted">No unavailable dates</small>-->
+<!--                </div>-->
+<!--                <ul class="mt-2" th:if="${!#lists.isEmpty(venue.unavailableDates)}">-->
+<!--                    <li th:each="d: ${venue.unavailableDates}" th:text="${d}">2025-08-01</li>-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; RIGHT: booking sidebar &ndash;&gt;-->
+<!--        <aside class="sidebar">-->
+
+<!--            &lt;!&ndash; Game selector &ndash;&gt;-->
+<!--            <div class="selector-card">-->
+<!--                <label class="form-label fw-bold">Choose a Game</label>-->
+<!--                <select id="gameSelect" class="form-select" aria-label="Select game">-->
+<!--                    <option value="">— Select a game —</option>-->
+<!--                    <option th:each="gd : ${venue.gameDetailsList}"-->
+<!--                            th:value="${gd.id}"-->
+<!--                            th:data-start="${gd.startTime}"-->
+<!--                            th:data-end="${gd.endTime}"-->
+<!--                            th:data-slots="${gd.slotsPerHour}"-->
+<!--                            th:data-price="${gd.pricePerSlot}"-->
+<!--                            th:text="${gd.game.name}">-->
+<!--                    </option>-->
+<!--                </select>-->
+
+<!--                <div id="gameMeta" class="d-flex justify-content-between align-items-center mt-3" style="display:none;">-->
+<!--                    <div>-->
+<!--                        <div class="muted">Time</div>-->
+<!--                        <div id="gameTime" class="fw-semibold">08:00 - 18:00</div>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <div class="muted">Slots/hr </div>-->
+<!--                        <div id="gameSlots" class="fw-semibold">5</div>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <div class="muted">Price</div>-->
+<!--                        <div id="gamePrice" class="price-badge">₹150</div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Calendar &ndash;&gt;-->
+<!--            <div class="selector-card calendar mt-3">-->
+<!--                <div class="calendar-header d-flex justify-content-between align-items-center">-->
+<!--                    <div>-->
+<!--                        <strong id="calendarTitle"></strong>-->
+<!--                        <div class="muted small">Green = available • Red = full</div>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <button id="prevMonth" class="btn btn-sm btn-light me-1"><i class="fa fa-chevron-left"></i></button>-->
+<!--                        <button id="nextMonth" class="btn btn-sm btn-light"><i class="fa fa-chevron-right"></i></button>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <div class="calendar-grid">-->
+<!--                    <div class="dow">Mon</div><div class="dow">Tue</div><div class="dow">Wed</div>-->
+<!--                    <div class="dow">Thu</div><div class="dow">Fri</div><div class="dow">Sat</div><div class="dow">Sun</div>-->
+<!--                </div>-->
+
+<!--                <div id="calendarGrid" class="calendar-grid" style="margin-top:8px;"></div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Slots &ndash;&gt;-->
+<!--            <div class="selector-card mt-3">-->
+<!--                <div class="d-flex justify-content-between align-items-center">-->
+<!--                    <h6 class="mb-0">Available Slots</h6>-->
+<!--                    <small id="selectedDateText" class="muted">—</small>-->
+<!--                </div>-->
+
+<!--                <div id="slotsWrap" class="mt-3">-->
+<!--                    <div id="noSelection" class="muted">Choose a game and a green date to view slots.</div>-->
+<!--                    <div id="slotsContainer" style="display:none;"></div>-->
+<!--                </div>-->
+
+<!--                <div class="d-grid mt-3">-->
+<!--                    <button id="bookNowBtn" class="btn btn-primary" disabled>Book Selected Slot</button>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--        </aside>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    let selectedDate = null;-->
+<!--    let selectedGameId = null;-->
+<!--    let selectedSlotTime = null;-->
+
+<!--    const venueId = document.body.dataset.venueId;-->
+
+<!--    document.getElementById('gameSelect').addEventListener('change', function () {-->
+<!--        selectedGameId = this.value;-->
+<!--        let option = this.options[this.selectedIndex];-->
+<!--        if (selectedGameId) {-->
+<!--            document.getElementById('gameTime').innerText = option.dataset.start + " - " + option.dataset.end;-->
+<!--            document.getElementById('gameSlots').innerText = option.dataset.slots;-->
+<!--            document.getElementById('gamePrice').innerText = "₹" + option.dataset.price;-->
+<!--            document.getElementById('gameMeta').style.display = 'flex';-->
+<!--        } else {-->
+<!--            document.getElementById('gameMeta').style.display = 'none';-->
+<!--        }-->
+<!--        if (selectedDate) fetchAvailableSlots();-->
+<!--    });-->
+
+<!--    function fetchAvailableSlots() {-->
+<!--        fetch(`/api/venues/${venueId}/available-slots?date=${selectedDate}`)-->
+<!--            .then(res => res.json())-->
+<!--            .then(data => renderSlots(data))-->
+<!--            .catch(err => console.error("Error fetching slots:", err));-->
+<!--    }-->
+
+<!--    function renderSlots(data) {-->
+<!--        const container = document.getElementById('slotsContainer');-->
+<!--        container.innerHTML = "";-->
+<!--        container.style.display = 'block';-->
+<!--        document.getElementById('noSelection').style.display = 'none';-->
+
+<!--        let gameName = document.querySelector(`#gameSelect option[value="${selectedGameId}"]`).text;-->
+<!--        let gameData = data.find(g => g.gameName === gameName);-->
+
+<!--        if (!gameData) {-->
+<!--            container.innerHTML = "<div class='muted'>No slots found for this game.</div>";-->
+<!--            return;-->
+<!--        }-->
+
+<!--        gameData.timeSlots.forEach(slot => {-->
+<!--            const div = document.createElement('div');-->
+<!--            div.classList.add('slot-item');-->
+<!--            div.innerHTML = `<div>${slot.timeRange}</div><div>${slot.availableSlots > 0 ? slot.availableSlots + " slots" : "Full"}</div>`;-->
+<!--            if (slot.availableSlots > 0) {-->
+<!--                div.classList.add('available');-->
+<!--                div.addEventListener('click', function () {-->
+<!--                    document.querySelectorAll('.slot-item').forEach(s => s.classList.remove('selected'));-->
+<!--                    div.classList.add('selected');-->
+<!--                    selectedSlotTime = slot.timeRange;-->
+<!--                    document.getElementById('bookNowBtn').disabled = false;-->
+<!--                });-->
+<!--            } else {-->
+<!--                div.classList.add('full');-->
+<!--            }-->
+<!--            container.appendChild(div);-->
+<!--        });-->
+<!--    }-->
+
+<!--    document.getElementById('bookNowBtn').addEventListener('click', function () {-->
+<!--        if (selectedSlotTime && selectedDate && selectedGameId) {-->
+<!--            console.log(`Booking: Venue ${venueId}, Game ${selectedGameId}, Date ${selectedDate}, Time ${selectedSlotTime}`);-->
+<!--            alert("Booking request sent (check console)");-->
+<!--        }-->
+<!--    });-->
+
+<!--    // Simple calendar rendering-->
+<!--    const calendarGrid = document.getElementById('calendarGrid');-->
+<!--    const calendarTitle = document.getElementById('calendarTitle');-->
+<!--    let currentMonth = new Date();-->
+
+<!--    function renderCalendar() {-->
+<!--        calendarGrid.innerHTML = "";-->
+<!--        const year = currentMonth.getFullYear();-->
+<!--        const month = currentMonth.getMonth();-->
+<!--        calendarTitle.innerText = currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' });-->
+
+<!--        const firstDay = new Date(year, month, 1);-->
+<!--        let startDay = (firstDay.getDay() + 6) % 7; // Monday start-->
+<!--        for (let i = 0; i < startDay; i++) {-->
+<!--            calendarGrid.appendChild(document.createElement('div'));-->
+<!--        }-->
+
+<!--        const daysInMonth = new Date(year, month + 1, 0).getDate();-->
+<!--        for (let day = 1; day <= daysInMonth; day++) {-->
+<!--            const cell = document.createElement('div');-->
+<!--            cell.classList.add('date-cell', 'available'); // mark all as available for now-->
+<!--            cell.innerText = day;-->
+<!--            cell.addEventListener('click', () => {-->
+<!--                document.querySelectorAll('.date-cell').forEach(c => c.classList.remove('selected'));-->
+<!--                cell.classList.add('selected');-->
+<!--                selectedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;-->
+<!--                document.getElementById('selectedDateText').innerText = selectedDate;-->
+<!--                if (selectedGameId) fetchAvailableSlots();-->
+<!--            });-->
+<!--            calendarGrid.appendChild(cell);-->
+<!--        }-->
+<!--    }-->
+<!--    document.getElementById('prevMonth').addEventListener('click', () => { currentMonth.setMonth(currentMonth.getMonth() - 1); renderCalendar(); });-->
+<!--    document.getElementById('nextMonth').addEventListener('click', () => { currentMonth.setMonth(currentMonth.getMonth() + 1); renderCalendar(); });-->
+
+<!--    renderCalendar();-->
+<!--</script>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${venue.name}">Venue Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* ---- Base ---- */
+        body { font-family: Arial, sans-serif; margin:0; background:#f5f6f8; color:#222; }
+        .container-xl { max-width: 1200px; margin: auto; padding: 18px; }
+
+        /* ---- Hero ---- */
+        .hero { position: relative; height: 300px; background-size: cover; background-position: center; border-radius: 10px; overflow: hidden; }
+        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.6)); color: white; padding: 20px; display:flex; flex-direction:column; justify-content:flex-end; }
+        .hero-overlay h1 { margin:0; font-size:28px; }
+        .location { display: flex; align-items: center; margin-top: 8px; font-size:14px; opacity:0.95; }
+        .location i { margin-right:8px; }
+
+        /* ---- Layout ---- */
+        .content { display: flex; gap: 20px; margin-top: 20px; align-items: flex-start; }
+        .card-plain, .selector-card { background: white; padding: 16px; border-radius: 10px; box-shadow: 0 6px 18px rgba(16,24,40,0.06); }
+        .left { flex:1; }
+        aside.sidebar { width: 360px; min-width:280px; }
+
+        /* ---- Amenities ---- */
+        .amenities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
+        .amenity { display:flex; gap:8px; align-items:center; background:#f8fafb; padding:8px; border-radius:8px; font-size:14px; }
+
+        /* ---- Calendar ---- */
+        .calendar-header { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top:8px; }
+        .dow { text-align:center; font-weight:600; font-size:13px; color:#555; }
+        .date-cell { padding: 8px 6px; border-radius:8px; text-align:center; cursor:pointer; user-select:none; font-size:14px; }
+        .date-cell.available { background:#e7f9ee; color:#023c2b; }
+        .date-cell.full { background:#fdecea; color:#7a1a1a; cursor:not-allowed; }
+        .date-cell.muted { background:#f0f2f5; color:#8a8f98; cursor:not-allowed; }
+        .date-cell.selected { box-shadow: 0 0 0 3px rgba(0,123,255,0.12); border-radius:8px; }
+        .date-cell.today { outline: 2px dashed rgba(34,197,94,0.25); }
+
+        /* ---- Slots ---- */
+        .slots-header { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+        .slots-list { margin-top:10px; max-height:320px; overflow:auto; }
+        .slot-item { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:10px; margin-bottom:8px; border:1px solid #e6edf3; background:#fff; cursor:pointer; }
+        .slot-item.available:hover { background:#f0fff6; }
+        .slot-item.full { background:#fff5f5; color:#7a1a1a; cursor:not-allowed; }
+        .slot-item.selected { background:#007bff; color:white; border-color:#007bff; }
+
+        /* ---- Buttons / misc ---- */
+        .btn { padding:10px 14px; border-radius:8px; border:none; cursor:pointer; font-weight:600; }
+        .btn-primary { background:#007bff; color:white; }
+        .btn-disabled { background:#cfd6dc; color:#6b7280; cursor:not-allowed; }
+        .muted { color: #6b7280; font-size:13px; }
+        .meta-row { display:flex; gap:12px; align-items:center; margin-top:10px; }
+        .price-badge { background:#007bff; color:white; padding:4px 8px; border-radius:6px; font-weight:700; }
+
+        /* Responsive */
+        @media (max-width:900px) {
+            .content { flex-direction: column; }
+            aside.sidebar { width:100%; }
+        }
+    </style>
+</head>
+<body data-venue-id="${venue.id}" th:attr="data-venue-id=${venue.id}">
+<div class="container-xl">
+
+    <!-- HERO -->
+    <div class="hero" th:style="'background-image: url(' + ${venue.imagePath} + ')'">
+        <img th:src="${venue.imagePath}" alt="venue image" style="opacity:0; width:0; height:0;">
+        <div class="hero-overlay">
+            <h1 th:text="${venue.name}">Venue Name</h1>
+            <div class="location">
+                <i class="fa-solid fa-location-dot"></i>
+                <span th:text="${venue.location}">Venue Location</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="content">
+
+        <!-- LEFT: Venue details -->
+        <div class="left">
+            <div class="card-plain">
+                <h3 class="mb-2">About</h3>
+                <p class="venue-desc" th:text="${venue.description}">Venue description...</p>
+
+                <hr style="margin:18px 0; border-top:1px solid #eef2f7;">
+
+                <h5>Amenities</h5>
+                <div class="amenities-grid mt-3">
+                    <div class="amenity" th:each="amen : ${venue.amenities}">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span th:text="${amen}">Amenity</span>
+                    </div>
+                    <div th:if="${#lists.isEmpty(venue.amenities)}" class="muted">No amenities listed.</div>
+                </div>
+
+                <hr style="margin:18px 0; border-top:1px solid #eef2f7;">
+
+                <h5>Unavailable Dates</h5>
+                <p class="muted">Days when the venue is closed.</p>
+                <div th:if="${#lists.isEmpty(venue.unavailableDates)}">
+                    <small class="muted">No unavailable dates</small>
+                </div>
+                <ul class="mt-2" th:if="${!#lists.isEmpty(venue.unavailableDates)}">
+                    <li th:each="d: ${venue.unavailableDates}" th:text="${d}">2025-08-01</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RIGHT: booking sidebar -->
+        <aside class="sidebar">
+            <!-- Game selector -->
+            <div class="selector-card">
+                <label class="form-label fw-bold">Choose a Game</label>
+                <select id="gameSelect" class="form-select" aria-label="Select game">
+                    <option value="">— Select a game —</option>
+                    <option th:each="gd : ${venue.gameDetailsList}"
+                            th:value="${gd.id}"
+                            th:data-start="${gd.startTime}"
+                            th:data-end="${gd.endTime}"
+                            th:data-slots="${gd.slotsPerHour}"
+                            th:data-price="${gd.pricePerSlot}"
+                            th:text="${gd.game.name}">
+                    </option>
+                </select>
+
+                <div id="gameMeta" class="meta-row" style="display:none; gap: 10px; margin-top: 8px;">
+                    <div>
+                        <div class="muted">Time</div>
+                        <div id="gameTime" class="fw-semibold"></div>
+                    </div>
+                    <div>
+                        <div class="muted">Slots/hr</div>
+                        <div id="gameSlots" class="fw-semibold"></div>
+                    </div>
+                    <div>
+                        <div class="muted">Price</div>
+                        <div id="gamePrice" class="price-badge"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div class="selector-card calendar mt-3">
+                <div class="calendar-header">
+                    <div>
+                        <strong id="calendarTitle"></strong>
+                        <div class="muted small">Green = available • Red = full • Grey = closed/past</div>
+                    </div>
+                    <div>
+                        <button id="prevMonth" class="btn" aria-label="Previous month"><i class="fa fa-chevron-left"></i></button>
+                        <button id="nextMonth" class="btn" aria-label="Next month"><i class="fa fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="calendar-grid" style="margin-top:10px;">
+                    <div class="dow">Mon</div><div class="dow">Tue</div><div class="dow">Wed</div>
+                    <div class="dow">Thu</div><div class="dow">Fri</div><div class="dow">Sat</div><div class="dow">Sun</div>
+                </div>
+                <div id="calendarGrid" class="calendar-grid" style="margin-top:8px;"></div>
+            </div>
+
+            <!-- Slots -->
+            <div class="selector-card mt-3">
+                <div class="slots-header">
+                    <h6 class="mb-0">Available Slots</h6>
+                    <small id="selectedDateText" class="muted">—</small>
+                </div>
+                <div id="slotsWrap" class="mt-3">
+                    <div id="noSelection" class="muted">Choose a game and a green date to view slots.</div>
+                    <div id="slotsContainer" class="slots-list" style="display:none;"></div>
+                </div>
+                <div style="margin-top:14px;">
+                    <button id="bookNowBtn" class="btn btn-primary btn-disabled" disabled>Book Selected Slot</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<!--<script>-->
+<!--    const venueId = /*[[${venue.id}]]*/ 0;-->
+<!--    let selectedGameId = null;-->
+<!--    let selectedDate = null;-->
+<!--    let selectedSlot = null;-->
+
+<!--    const calendarGrid = document.getElementById('calendarGrid');-->
+<!--    const calendarTitle = document.getElementById('calendarTitle');-->
+<!--    const bookNowBtn = document.getElementById('bookNowBtn');-->
+<!--    const slotsContainer = document.getElementById('slotsContainer');-->
+<!--    const noSelection = document.getElementById('noSelection');-->
+
+<!--    function loadAvailabilityForCurrentMonth() {-->
+<!--        if (!selectedGameId) {-->
+<!--            calendarGrid.innerHTML = "";-->
+<!--            return;-->
+<!--        }-->
+<!--        fetch(`/api/venues/${venueId}/availability?gameId=${selectedGameId}`)-->
+<!--            .then(res => res.json())-->
+<!--            .then(data => renderCalendar(data))-->
+<!--            .catch(err => console.error("Error loading availability:", err));-->
+<!--    }-->
+
+<!--    function renderCalendar(availabilityData) {-->
+<!--        calendarGrid.innerHTML = "";-->
+<!--        const today = new Date();-->
+<!--        today.setHours(0,0,0,0);-->
+<!--        const year = today.getFullYear();-->
+<!--        const month = today.getMonth();-->
+
+<!--        calendarTitle.innerText = today.toLocaleString('default', { month: 'long', year: 'numeric' });-->
+
+<!--        const firstDay = new Date(year, month, 1);-->
+<!--        let startDay = (firstDay.getDay() + 6) % 7; // Monday start-->
+<!--        for (let i = 0; i < startDay; i++) {-->
+<!--            calendarGrid.appendChild(document.createElement('div'));-->
+<!--        }-->
+
+<!--        const daysInMonth = new Date(year, month + 1, 0).getDate();-->
+<!--        for (let day = 1; day <= daysInMonth; day++) {-->
+<!--            const cell = document.createElement('div');-->
+<!--            cell.classList.add('date-cell');-->
+<!--            cell.innerText = day;-->
+
+<!--            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;-->
+<!--            const cellDate = new Date(dateStr);-->
+<!--            const isPast = cellDate < today;-->
+<!--            const dayInfo = availabilityData.find(d => d.date === dateStr);-->
+
+<!--            if (isPast) {-->
+<!--                cell.classList.add('muted');-->
+<!--            } else if (dayInfo && dayInfo.available) {-->
+<!--                cell.classList.add('available');-->
+<!--                cell.addEventListener('click', () => {-->
+<!--                    document.querySelectorAll('.date-cell').forEach(c => c.classList.remove('selected'));-->
+<!--                    cell.classList.add('selected');-->
+<!--                    selectedDate = dateStr;-->
+<!--                    document.getElementById('selectedDateText').innerText = selectedDate;-->
+<!--                    fetchAvailableSlots();-->
+<!--                });-->
+<!--            } else {-->
+<!--                cell.classList.add('full');-->
+<!--            }-->
+
+<!--            calendarGrid.appendChild(cell);-->
+<!--        }-->
+<!--    }-->
+
+<!--    function fetchAvailableSlots() {-->
+<!--        if (!selectedDate || !selectedGameId) return;-->
+
+<!--        slotsContainer.innerHTML = "";-->
+<!--        noSelection.style.display = "none";-->
+<!--        slotsContainer.style.display = "block";-->
+
+<!--        fetch(`/api/venues/${venueId}/available-slots?date=${selectedDate}&gameId=${selectedGameId}`)-->
+<!--            .then(res => res.json())-->
+<!--            .then(data => {-->
+<!--                if (!data || !data.timeSlots || data.timeSlots.length === 0) {-->
+<!--                    slotsContainer.innerHTML = "<p>No slots available.</p>";-->
+<!--                    return;-->
+<!--                }-->
+<!--                selectedSlot = null;-->
+<!--                bookNowBtn.disabled = true;-->
+<!--                bookNowBtn.classList.add('btn-disabled');-->
+
+<!--                data.timeSlots.forEach(slot => {-->
+<!--                    const div = document.createElement('div');-->
+<!--                    div.classList.add('slot-item');-->
+<!--                    if (slot.availableSlots > 0) {-->
+<!--                        div.classList.add('available');-->
+<!--                        div.addEventListener('click', () => {-->
+<!--                            document.querySelectorAll('.slot-item').forEach(s => s.classList.remove('selected'));-->
+<!--                            div.classList.add('selected');-->
+<!--                            selectedSlot = slot;-->
+<!--                            bookNowBtn.disabled = false;-->
+<!--                            bookNowBtn.classList.remove('btn-disabled');-->
+<!--                        });-->
+<!--                    } else {-->
+<!--                        div.classList.add('full');-->
+<!--                    }-->
+<!--                    div.innerText = `${slot.timeRange} (${slot.availableSlots} left)`;-->
+<!--                    slotsContainer.appendChild(div);-->
+<!--                });-->
+<!--            })-->
+<!--            .catch(err => console.error("Error fetching slots:", err));-->
+<!--    }-->
+
+<!--    document.getElementById('gameSelect').addEventListener('change', (e) => {-->
+<!--        selectedGameId = e.target.value;-->
+<!--        selectedDate = null;-->
+<!--        selectedSlot = null;-->
+<!--        bookNowBtn.disabled = true;-->
+<!--        bookNowBtn.classList.add('btn-disabled');-->
+<!--        noSelection.style.display = "block";-->
+<!--        slotsContainer.style.display = "none";-->
+
+<!--        if (!selectedGameId) {-->
+<!--            document.getElementById('gameMeta').style.display = "none";-->
+<!--            calendarGrid.innerHTML = "";-->
+<!--            return;-->
+<!--        }-->
+
+<!--        const opt = e.target.selectedOptions[0];-->
+<!--        document.getElementById('gameTime').innerText = opt.dataset.start + " - " + opt.dataset.end;-->
+<!--        document.getElementById('gameSlots').innerText = opt.dataset.slots;-->
+<!--        document.getElementById('gamePrice').innerText = "₹" + opt.dataset.price;-->
+<!--        document.getElementById('gameMeta').style.display = "flex";-->
+
+<!--        loadAvailabilityForCurrentMonth();-->
+<!--    });-->
+
+<!--    bookNowBtn.addEventListener('click', () => {-->
+<!--        if (!selectedSlot) return;-->
+
+<!--        bookNowBtn.disabled = true;-->
+<!--        bookNowBtn.innerText = "Booking...";-->
+
+<!--        fetch('/api/bookings/book', {-->
+<!--            method: 'POST',-->
+<!--            headers: {'Content-Type': 'application/json'},-->
+<!--            body: JSON.stringify({-->
+<!--                venueId: venueId,-->
+<!--                gameId: selectedGameId,-->
+<!--                date: selectedDate,-->
+<!--                timeRange: selectedSlot.timeRange,-->
+<!--                userId: 1 // replace with actual logged-in user-->
+<!--            })-->
+<!--        })-->
+<!--            .then(res => res.json())-->
+<!--            .then(data => {-->
+<!--                alert(data.message);-->
+<!--                bookNowBtn.disabled = false;-->
+<!--                bookNowBtn.innerText = "Book Selected Slot";-->
+<!--                // Refresh slots to reflect availability-->
+<!--                fetchAvailableSlots();-->
+<!--            })-->
+<!--            .catch(err => {-->
+<!--                console.error(err);-->
+<!--                bookNowBtn.disabled = false;-->
+<!--                bookNowBtn.innerText = "Book Selected Slot";-->
+<!--            });-->
+<!--    });-->
+
+<!--    function subscribeAvailability() {-->
+<!--        if (!selectedGameId || !selectedDate) return;-->
+
+<!--        // Close any previous subscription if exists-->
+<!--        if (window.slotEventSource) {-->
+<!--            window.slotEventSource.close();-->
+<!--        }-->
+
+<!--        window.slotEventSource = new EventSource(`/api/venues/subscribe-availability?venueId=${venueId}&gameId=${selectedGameId}&date=${selectedDate}`);-->
+
+<!--        window.slotEventSource.addEventListener('slot-update', function(e) {-->
+<!--            const slotUpdate = JSON.parse(e.data);-->
+<!--            document.querySelectorAll('.slot-item').forEach(div => {-->
+<!--                if (div.innerText.startsWith(slotUpdate.timeRange)) {-->
+<!--                    div.innerText = `${slotUpdate.timeRange} (${slotUpdate.availableSlots} left)`;-->
+<!--                    div.classList.toggle('full', slotUpdate.availableSlots === 0);-->
+<!--                    div.classList.toggle('available', slotUpdate.availableSlots > 0);-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+<!--    }-->
+
+
+<!--</script>-->
+
+
+
+<script>
+    const venueId = /*[[${venue.id}]]*/ 0;
+    let selectedGameId = null;
+    let selectedDate = null;
+    let selectedSlot = null;
+    let slotEventSource = null;
+
+    const calendarGrid = document.getElementById('calendarGrid');
+    const calendarTitle = document.getElementById('calendarTitle');
+    const bookNowBtn = document.getElementById('bookNowBtn');
+    const slotsContainer = document.getElementById('slotsContainer');
+    const noSelection = document.getElementById('noSelection');
+
+    function loadAvailabilityForCurrentMonth() {
+        if (!selectedGameId) {
+            calendarGrid.innerHTML = "";
+            return;
+        }
+        fetch(`/api/venues/${venueId}/availability?gameId=${selectedGameId}`)
+            .then(res => res.json())
+            .then(data => renderCalendar(data))
+            .catch(err => console.error("Error loading availability:", err));
+    }
+
+    function renderCalendar(availabilityData) {
+        calendarGrid.innerHTML = "";
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const year = today.getFullYear();
+        const month = today.getMonth();
+
+        calendarTitle.innerText = today.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+        const firstDay = new Date(year, month, 1);
+        let startDay = (firstDay.getDay() + 6) % 7; // Monday start
+        for (let i = 0; i < startDay; i++) {
+            calendarGrid.appendChild(document.createElement('div'));
+        }
+
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        for (let day = 1; day <= daysInMonth; day++) {
+            const cell = document.createElement('div');
+            cell.classList.add('date-cell');
+            cell.innerText = day;
+
+            const dateStr = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            const cellDate = new Date(dateStr);
+            const isPast = cellDate < today;
+            const dayInfo = availabilityData.find(d => d.date === dateStr);
+
+            if (isPast) {
+                cell.classList.add('muted');
+            } else if (dayInfo && dayInfo.available) {
+                cell.classList.add('available');
+                cell.addEventListener('click', () => {
+                    document.querySelectorAll('.date-cell').forEach(c => c.classList.remove('selected'));
+                    cell.classList.add('selected');
+                    selectedDate = dateStr;
+                    document.getElementById('selectedDateText').innerText = selectedDate;
+                    fetchAvailableSlots();
+                });
+            } else {
+                cell.classList.add('full');
+            }
+
+            calendarGrid.appendChild(cell);
+        }
+    }
+
+    function fetchAvailableSlots() {
+        if (!selectedDate || !selectedGameId) return;
+
+        slotsContainer.innerHTML = "";
+        noSelection.style.display = "none";
+        slotsContainer.style.display = "block";
+
+        // Close previous SSE if exists
+        if (slotEventSource) {
+            slotEventSource.close();
+            slotEventSource = null;
+        }
+
+        fetch(`/api/venues/${venueId}/available-slots?date=${selectedDate}&gameId=${selectedGameId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data || !data.timeSlots || data.timeSlots.length === 0) {
+                    slotsContainer.innerHTML = "<p>No slots available.</p>";
+                    return;
+                }
+
+                selectedSlot = null;
+                bookNowBtn.disabled = true;
+                bookNowBtn.classList.add('btn-disabled');
+
+                data.timeSlots.forEach(slot => {
+                    const div = document.createElement('div');
+                    div.classList.add('slot-item');
+                    div.innerText = `${slot.timeRange} (${slot.availableSlots} left)`;
+
+                    if (slot.availableSlots > 0) {
+                        div.classList.add('available');
+                        div.addEventListener('click', () => {
+                            document.querySelectorAll('.slot-item').forEach(s => s.classList.remove('selected'));
+                            div.classList.add('selected');
+                            selectedSlot = slot;
+                            bookNowBtn.disabled = false;
+                            bookNowBtn.classList.remove('btn-disabled');
+                        });
+                    } else {
+                        div.classList.add('full');
+                    }
+
+                    slotsContainer.appendChild(div);
+                });
+
+                // Subscribe to SSE for live updates
+                subscribeAvailability();
+            })
+            .catch(err => console.error("Error fetching slots:", err));
+    }
+
+    function subscribeAvailability() {
+        if (!selectedGameId || !selectedDate) return;
+
+        slotEventSource = new EventSource(`/api/venues/subscribe-availability?venueId=${venueId}&gameId=${selectedGameId}&date=${selectedDate}`);
+
+        slotEventSource.addEventListener('slot-update', function(e) {
+            const slotUpdate = JSON.parse(e.data);
+
+            document.querySelectorAll('.slot-item').forEach(div => {
+                if (div.innerText.startsWith(slotUpdate.timeRange)) {
+                    div.innerText = `${slotUpdate.timeRange} (${slotUpdate.availableSlots} left)`;
+                    div.classList.toggle('full', slotUpdate.availableSlots === 0);
+                    div.classList.toggle('available', slotUpdate.availableSlots > 0);
+
+                    // If currently selected slot is now full, deselect it
+                    if (selectedSlot && selectedSlot.timeRange === slotUpdate.timeRange && slotUpdate.availableSlots === 0) {
+                        div.classList.remove('selected');
+                        selectedSlot = null;
+                        bookNowBtn.disabled = true;
+                        bookNowBtn.classList.add('btn-disabled');
+                        alert("The slot you selected is now full. Please choose another slot.");
+                    }
+
+                    // If slot becomes available, make it clickable
+                    if (slotUpdate.availableSlots > 0) {
+                        div.addEventListener('click', () => {
+                            document.querySelectorAll('.slot-item').forEach(s => s.classList.remove('selected'));
+                            div.classList.add('selected');
+                            selectedSlot = slotUpdate;
+                            bookNowBtn.disabled = false;
+                            bookNowBtn.classList.remove('btn-disabled');
+                        });
+                    }
+                }
+            });
+        });
+    }
+
+    document.getElementById('gameSelect').addEventListener('change', (e) => {
+        selectedGameId = e.target.value;
+        selectedDate = null;
+        selectedSlot = null;
+        bookNowBtn.disabled = true;
+        bookNowBtn.classList.add('btn-disabled');
+        noSelection.style.display = "block";
+        slotsContainer.style.display = "none";
+
+        if (!selectedGameId) {
+            document.getElementById('gameMeta').style.display = "none";
+            calendarGrid.innerHTML = "";
+            return;
+        }
+
+        const opt = e.target.selectedOptions[0];
+        document.getElementById('gameTime').innerText = opt.dataset.start + " - " + opt.dataset.end;
+        document.getElementById('gameSlots').innerText = opt.dataset.slots;
+        document.getElementById('gamePrice').innerText = "₹" + opt.dataset.price;
+        document.getElementById('gameMeta').style.display = "flex";
+
+        loadAvailabilityForCurrentMonth();
+    });
+
+    bookNowBtn.addEventListener('click', () => {
+        if (!selectedSlot) return;
+
+        bookNowBtn.disabled = true;
+        bookNowBtn.innerText = "Booking...";
+
+        fetch('/api/bookings/book', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                venueId: venueId,
+                gameId: selectedGameId,
+                date: selectedDate,
+                timeRange: selectedSlot.timeRange,
+                userId: 1 // Replace with actual logged-in user ID
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                bookNowBtn.disabled = false;
+                bookNowBtn.innerText = "Book Selected Slot";
+                fetchAvailableSlots(); // Refresh slots after booking
+            })
+            .catch(err => {
+                console.error(err);
+                bookNowBtn.disabled = false;
+                bookNowBtn.innerText = "Book Selected Slot";
+            });
+    });
+</script>
+

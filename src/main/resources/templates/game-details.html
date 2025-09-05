@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${game.name} + ' - Game Details'">Game Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans leading-relaxed">
+
+<!-- Game Header -->
+<header class="bg-white shadow-md p-4">
+    <h1 class="text-3xl font-bold text-center text-blue-800" th:text="${game.name}">Game Name</h1>
+</header>
+
+<!-- Game Image -->
+<div class="flex justify-center mt-6">
+    <img th:src="@{/images/{img}(img=${game.imageUrl})}" alt="Game Image"
+         class="rounded-lg shadow-lg w-96 h-auto object-cover border border-gray-300">
+</div>
+
+<!-- Event Search by State -->
+<div class="max-w-2xl mx-auto mt-8 bg-white p-6 rounded-lg shadow">
+    <h2 class="text-xl font-semibold mb-4 text-gray-800">Search Events by State</h2>
+
+    <input type="text" id="stateSearch" placeholder="Enter state name..."
+           class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+
+    <div id="eventList" class="mt-6">
+        <!-- Event list table (filtered by JS) -->
+        <table class="w-full table-auto border border-gray-200">
+            <thead class="bg-gray-200">
+            <tr>
+                <th class="p-2 text-left">Event Name</th>
+                <th class="p-2 text-left">Location</th>
+                <th class="p-2 text-left">Date</th>
+                <th class="p-2 text-left">State</th>
+            </tr>
+            </thead>
+            <tbody id="eventTableBody">
+            <tr th:each="event : ${events}" class="hover:bg-gray-100">
+                <td class="p-2" th:text="${event.name}">Event Name</td>
+                <td class="p-2" th:text="${event.location}">Location</td>
+                <td class="p-2" th:text="${event.date}">Date</td>
+                <td class="p-2" th:text="${event.state.name}">State Name</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JavaScript for filtering events -->
+<script>
+    const input = document.getElementById('stateSearch');
+    const rows = document.querySelectorAll('#eventTableBody tr');
+
+    input.addEventListener('input', function () {
+        const search = this.value.toLowerCase();
+
+        rows.forEach(row => {
+            const stateCell = row.children[3].innerText.toLowerCase();
+            if (stateCell.includes(search)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

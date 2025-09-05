@@ -1,0 +1,217 @@
+<!-- ✅ CSS -->
+<style>
+    form {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    form div {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="time"],
+    input[type="file"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    .game-detail-block {
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 8px;
+        background: #ffffff;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #2d89e5;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button[type="button"] {
+        margin-top: 10px;
+        background-color: #4caf50;
+    }
+
+    button:hover {
+        opacity: 0.9;
+    }
+</style>
+
+
+
+
+<!-- ✅ Flash message block -->
+<div th:if="${param.successVenue}" style="color: green; font-weight: bold; margin-bottom: 15px;">
+    ✅ Venue added successfully!
+</div>
+
+<div th:if="${param.errorVenue}" style="color: red; font-weight: bold; margin-bottom: 15px;">
+    ❌ Failed to add venue. Please try again.
+</div>
+
+
+<!-- ✅ Your form and script remain unchanged -->
+<form th:action="@{/admin/add-venuedetail}" method="post" th:object="${venue}" enctype="multipart/form-data">
+    <div>
+        <label>Venue Name:</label>
+        <input type="text" th:field="*{name}" required />
+    </div>
+
+    <div>
+        <label>Location:</label>
+        <input type="text" th:field="*{location}" required />
+    </div>
+
+    <div>
+        <label>Select State:</label>
+        <select id="stateDropdown" name="stateId" required>
+            <option value="" disabled selected>Select a state</option>
+            <option th:each="s : ${states}" th:value="${s.id}" th:text="${s.name}"></option>
+        </select>
+    </div>
+
+
+
+
+    <div>
+        <label>Select District:</label>
+        <select th:field="*{district.id}" id="districtDropdown">
+            <option value="" disabled selected>Select a district</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Or Enter District Manually:</label>
+        <input type="text" name="manualDistrictName" placeholder="Enter new district" />
+    </div>
+
+    <div>
+        <label>Description:</label>
+        <textarea th:field="*{description}" required></textarea>
+    </div>
+
+    <div>
+        <label>Amenities (comma separated):</label>
+        <input type="text" name="amenitiesInput" placeholder="e.g. Parking, Washroom, WiFi" />
+    </div>
+
+
+    <div class="mb-3">
+        <label for="venueImage" class="form-label">Venue Image</label>
+        <input type="file" name="venueImage" class="form-control" id="venueImage" accept="image/*" required>
+    </div>
+
+    <div id="gameDetailsContainer">
+        <div th:each="detail, iterStat : *{gameDetailsList}" class="game-detail-block">
+            <h4>Game Detail <span th:text="${iterStat.index + 1}"></span></h4>
+
+            <label>Game:</label>
+            <select th:field="*{gameDetailsList[__${iterStat.index}__].game.id}" required>
+                <option value="">Select a game</option>
+                <option th:each="g : ${games}" th:value="${g.id}" th:text="${g.name}"></option>
+            </select>
+
+            <label>Start Time:</label>
+            <input type="time" th:field="*{gameDetailsList[__${iterStat.index}__].startTime}" required />
+
+            <label>End Time:</label>
+            <input type="time" th:field="*{gameDetailsList[__${iterStat.index}__].endTime}" required />
+
+            <label>Slots Per Hour:</label>
+            <input type="number" th:field="*{gameDetailsList[__${iterStat.index}__].slotsPerHour}" required />
+
+            <label>Price Per Slot:</label>
+            <input type="number" th:field="*{gameDetailsList[__${iterStat.index}__].pricePerSlot}" required />
+        </div>
+    </div>
+
+    <button type="button" onclick="addGameDetail()">+ Add More Game Info</button>
+
+    <div>
+        <button type="submit">Save Venue</button>
+    </div>
+</form>
+
+
+
+
+<script>
+    document.getElementById('stateDropdown').addEventListener('change', function () {
+        const stateId = this.value;
+        fetch('/districts/by-state/' + stateId) // ✅ fixed URL
+            .then(res => res.json())
+            .then(data => {
+                const districtDropdown = document.getElementById('districtDropdown');
+                districtDropdown.innerHTML = '<option value="">-- Select District --</option>';
+                data.forEach(d => {
+                    const option = document.createElement('option');
+                    option.value = d.id;
+                    option.text = d.name;
+                    districtDropdown.appendChild(option);
+                });
+            });
+    });
+
+
+    function addGameDetail() {
+        const container = document.getElementById("gameDetailsContainer");
+        const index = container.children.length;
+
+        // Get options from the first select already rendered by Thymeleaf
+        const firstSelect = document.querySelector("select[name*='gameDetailsList']");
+        const gameOptions = firstSelect ? firstSelect.innerHTML : '';
+
+        const block = document.createElement("div");
+        block.classList.add("game-detail-block");
+
+        block.innerHTML = `
+        <h4>Game Detail ${index + 1}</h4>
+
+        <label>Game:</label>
+        <select name="gameDetailsList[${index}].game.id" required>
+            ${gameOptions}
+        </select>
+
+        <label>Start Time:</label>
+        <input type="time" name="gameDetailsList[${index}].startTime" required />
+
+        <label>End Time:</label>
+        <input type="time" name="gameDetailsList[${index}].endTime" required />
+
+        <label>Slots Per Hour:</label>
+        <input type="number" name="gameDetailsList[${index}].slotsPerHour" required />
+
+        <label>Price Per Slot:</label>
+        <input type="number" name="gameDetailsList[${index}].pricePerSlot" required />
+    `;
+
+        container.appendChild(block);
+    }
+
+
+</script>
